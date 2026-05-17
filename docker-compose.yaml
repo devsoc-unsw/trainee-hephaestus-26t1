@@ -1,0 +1,50 @@
+services:
+  dev-container:
+    container_name: hephaestus-dev-container
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+
+    stdin_open: true
+    tty: true
+
+    ports:
+      - "3000:3000"
+      - "8080:8080"
+
+    volumes:
+      - ./:/root/hephaestus
+
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgres://postgres:password@db:5432/railway
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    container_name: hephaestus-db
+    image: postgres:17.7
+
+    restart: unless-stopped
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: railway
+
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d railway" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
