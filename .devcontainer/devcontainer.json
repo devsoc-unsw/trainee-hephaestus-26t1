@@ -28,5 +28,5 @@
   },
   "workspaceFolder": "/workspace",
   // Comment out to connect as the root user.
-  "remoteUser": "bun",
+  "remoteUser": "bun"
 }
