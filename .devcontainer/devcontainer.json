@@ -1,0 +1,32 @@
+// Default Ubuntu-based DevContainer Template.
+// For more customisation options, see https://containers.dev/implementors/json_reference
+{
+  name: "Training Program Team Hephaestus Dev Container",
+  dockerComposeFile: "docker-compose.yaml",
+  service: "dev-container",
+  customizations: {
+    // Configure JetBrains IDE-specific properties
+    jetbrains: {
+      backend: "WebStorm",
+      settings: {
+        // IDE settings can be added via “Show context actions”|“Add currently modified settings from IDE”.
+        // A complete list of supported settings is also available through auto-completion
+      },
+      plugins: [
+        // A set of plugin IDs.
+        // Plugin ID can be found on the corresponding plugin’s page at https://plugins.jetbrains.com.
+      ]
+    },
+    vscode: {
+      extensions: [
+        "esbenp.prettier-vscode",
+      ]
+    }
+  },
+  features: {
+    // Add additional features to your project using auto-completion.
+  },
+  workspaceFolder: "/workspace",
+  // Comment out to connect as the root user.
+  remoteUser: "bun",
+}

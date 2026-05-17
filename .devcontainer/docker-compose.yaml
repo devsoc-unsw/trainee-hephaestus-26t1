@@ -1,12 +1,32 @@
 services:
+  dev-container:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    stdin_open: true
+    tty: true
+
+    ports:
+      - "3000:3000"
+      - "8080:8080"
+      - "5432:5432"
+
+    volumes:
+      - ..:/workspace:cached
+      - /home/bun/.cargo
+      - /home/bun/.rustup
+
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgres://postgres:postgres@db:5432/hephaestus
+
   db:
     container_name: hephaestus-db
     image: postgres:17.7
-
     restart: unless-stopped
 
-    ports:
-      - "5432:5432"
+    network_mode: "service:dev-container"
 
     volumes:
       - hephaestus-postgres-data:/var/lib/postgresql/data
