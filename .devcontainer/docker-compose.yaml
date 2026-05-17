@@ -1,0 +1,48 @@
+services:
+  dev-container:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    stdin_open: true
+    tty: true
+
+    command: sleep infinity
+
+    ports:
+      - "3000:3000"
+      - "8080:8080"
+      - "5432:5432"
+
+    volumes:
+      - ..:/workspace:cached
+      - /home/bun/.cargo
+      - /home/bun/.rustup
+
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgres://postgres:postgres@db:5432/hephaestus
+
+  db:
+    container_name: hephaestus-db
+    image: postgres:17.7
+    restart: unless-stopped
+
+    network_mode: "service:dev-container"
+
+    volumes:
+      - hephaestus-postgres-data:/var/lib/postgresql/data
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: hephaestus
+
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d hephaestus" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  hephaestus-postgres-data:
