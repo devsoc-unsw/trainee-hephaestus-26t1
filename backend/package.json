@@ -4,16 +4,26 @@
   "type": "module",
   "private": true,
   "devDependencies": {
-    "dbmate": "^2.33.0",
     "@types/bun": "latest",
-    "@types/express": "^5.0.6"
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/morgan": "^1.9.10",
+    "@types/pg": "^8.20.0",
+    "@types/swagger-ui-express": "^4.1.8",
+    "dbmate": "^2.33.0",
+    "prettier": "^3.8.3"
   },
   "peerDependencies": {
     "typescript": "^5"
   },
   "dependencies": {
     "backend": ".",
-    "express": "^5.2.1"
+    "better-auth": "^1.6.11",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "morgan": "^1.10.1",
+    "pg": "^8.21.0",
+    "swagger-ui-express": "^5.0.1"
   },
   "scripts": {
     "start": "bun run db:migrate && bun run index.ts",
