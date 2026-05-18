@@ -1,0 +1,27 @@
+import { ArrowLeft } from "lucide-react"
+import { SignupForm } from "@/components/ui/signup-from"
+import Link from 'next/link';
+
+export default function Page() {
+  return (
+    <div className="flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10 font-sans text-zinc-100 bg-zinc-950 bg-[radial-gradient(circle_at_20%_80%,oklch(0.55_0.15_240/0.35),transparent_70%),radial-gradient(circle_at_50%_30%,oklch(0.50_0.25_300/0.4),transparent_80%),radial-gradient(circle_at_80%_20%,oklch(0.40_0.12_260/0.25),transparent_70%)]">
+      {/* Back Arrow */}
+      <div className="w-full flex items-start justify-start">
+        <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition"
+        >
+            <ArrowLeft size={20} />
+            Back
+        </Link>
+      </div>
+      {/* Signup Form */}
+      <div className="flex w-full max-w-sm flex-col gap-6">
+      <a href="/" className="flex items-center gap-2 self-center font-medium">
+          Termful
+        </a>
+        <SignupForm />
+      </div>
+    </div>
+  )
+}

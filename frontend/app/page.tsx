@@ -1,3 +1,4 @@
+"use client";
 import {Button} from "@/components/ui/button";
 import {
   Card,
@@ -6,8 +7,12 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import {Timer, BarChart3, CalendarDays} from "lucide-react";
+import Link from 'next/link';
+import { useRouter } from "next/navigation";
+
 
 export default function Home() {
+    const router = useRouter()
   return (
     <div
       className="flex flex-col min-h-screen font-sans text-zinc-100 bg-zinc-950 bg-[radial-gradient(circle_at_20%_80%,oklch(0.55_0.15_240/0.35),transparent_70%),radial-gradient(circle_at_50%_30%,oklch(0.50_0.25_300/0.4),transparent_80%),radial-gradient(circle_at_80%_20%,oklch(0.40_0.12_260/0.25),transparent_70%)]">
@@ -18,8 +23,13 @@ export default function Home() {
 
         {/* b. Right - Action Buttons */}
         <div className="flex gap-3">
-          <Button variant="ghost">Sign up</Button>
-          <Button variant="secondary">Log in</Button>
+        <Link href="/signup">
+            <Button variant="ghost">Sign up</Button>
+        </Link>
+        <Link href="/login">
+            <Button variant="secondary">Log in</Button>
+        </Link>
+          
         </div>
       </header>
 
@@ -36,9 +46,10 @@ export default function Home() {
             help you build better habits and conquer the term, one session at a
             time.
           </p>
-          <Button size="lg" className="h-12 px-8 text-md">
+          <Button size="lg" className="h-12 px-8 text-md" onClick={() => router.push('/signup')}>
             Create an account
           </Button>
+          
         </section>
 
         {/* b. Bottom: Feature Cards Section */}
