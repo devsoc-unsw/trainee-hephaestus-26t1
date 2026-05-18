@@ -1,9 +1,10 @@
 "use client";
-
+import { cn, frontendUrl } from "@/lib/utils";
 import * as React from "react";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "@tanstack/react-form";
+import { useAuth } from "@/app/providers/AuthProvider";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,7 +34,9 @@ const signupSchema = z.object({
         "Name must contain only numbers and letters."
       ),
 
-    email: z.email("Please enter a valid email address."),
+    email: z
+      .string()
+      .email("Please enter a valid email address."),
 
     password: z
       .string()
@@ -49,9 +52,16 @@ const signupSchema = z.object({
   });
 
 export function SignupForm({
-  ...props
-}: React.ComponentProps<typeof Card>) {
-  const router = useRouter();
+    className,
+    callbackUrl,
+    ...props
+  }: {
+    className?: string;
+    callbackUrl: string;
+  }) {
+    // Use auth and router
+    const auth = useAuth();
+    const router = useRouter();
 
   const [loading, setLoading] = React.useState(false);
 
@@ -70,23 +80,21 @@ export function SignupForm({
     onSubmit: async ({ value }) => {
       if (loading) return;
 
-      await authClient.signUp.email(
+      authClient.signUp.email(
         {
           name: value.name,
           email: value.email,
           password: value.password,
           callbackURL: "/dashboard",
         },
-
         {
           onRequest: () => {
             setLoading(true);
           },
-
-          onSuccess: () => {
+          onSuccess: async () => {
+            await auth.refetch();
             router.push("/dashboard");
           },
-
           onError: (ctx) => {
             setLoading(false);
             alert(ctx.error.message);
@@ -97,7 +105,7 @@ export function SignupForm({
   });
 
   return (
-    <Card {...props}>
+    <Card {...props} className={className}>
       <CardHeader className="text-center">
         <CardTitle className="text-xl">
           Create your account
@@ -285,12 +293,12 @@ export function SignupForm({
                 type="button"
                 variant="outline"
                 onClick={async () => {
-                  await authClient.signIn.social({
-                    provider: "google",
-                    callbackURL: "/dashboard",
-                    newUserCallbackURL: "/dashboard",
-                    errorCallbackURL: "/signup",
-                  });
+                    await authClient.signIn.social({
+                        provider: "google",
+                        callbackURL: `${frontendUrl()}${callbackUrl}`,
+                        newUserCallbackURL:
+                          `${frontendUrl()}/complete-sign-up?callbackUrl=${encodeURIComponent(callbackUrl)}`,
+                      });
                 }}
               >
                 Sign up with Google
