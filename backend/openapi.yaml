@@ -1,0 +1,105 @@
+openapi: 3.1.0
+info:
+  title: Termful Backend
+  description: The backend for team Hephaestus' Termful project
+  version: 1.0.0
+servers:
+  - url: 'https://termful-api.up.railway.app'
+paths:
+  /users/{userId}:
+    get:
+      tags:
+        - Users
+      summary: Fetch a user using their ID.
+      description: Fetch a Termful user's profile using their ID.
+      parameters:
+        - name: userId
+          in: path
+          description: The user's ID.
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: User with given ID not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: betterauth.session_token
+    internalApiKey:
+      description: Bearer token using internal API key
+      type: http
+      scheme: Bearer
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        displayName:
+          type: string
+        avatarUrl:
+          type: [ string, "null" ]
+      required:
+        - id
+        - username
+        - displayName
+        - avatarUrl
+      example:
+        id: "12345676543245"
+        username: horizell
+        displayName: Horizell
+
+    NullableUser:
+      type: [ object, "null" ]
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        displayName:
+          type: string
+        avatarUrl:
+          type: [ string, "null" ]
+      required:
+        - id
+        - username
+        - displayName
+        - avatarUrl
+      example:
+        id: "12345676543245"
+        username: horizell
+        displayName: Horizell
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: i32
+        message:
+          type: string
+      example:
+        code: 404
+        message: User not found.
+
+
+tags:
+  - name: Users
+    description: Routes relating to Termful users.
