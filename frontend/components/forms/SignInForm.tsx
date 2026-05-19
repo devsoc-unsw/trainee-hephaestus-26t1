@@ -1,9 +1,9 @@
-"use client"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+"use client";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import * as z from "zod";
 import {
   Card,
@@ -11,19 +11,19 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   Field,
   FieldDescription,
   FieldGroup,
   FieldLabel,
   FieldSeparator,
-  FieldError, 
-} from "@/components/ui/field"
-import { useAuth } from "@/app/providers/AuthProvider"
-import { authClient } from "@/lib/auth-client"
+  FieldError,
+} from "@/components/ui/field";
+import { useAuth } from "@/app/providers/AuthProvider";
+import { authClient } from "@/lib/auth-client";
 import { frontendUrl } from "@/lib/utils";
-import { useForm } from "@tanstack/react-form"
+import { useForm } from "@tanstack/react-form";
 
 // Create sign in form schema
 const signinFormSchema = z.object({
@@ -33,14 +33,14 @@ const signinFormSchema = z.object({
 
 export function LoginForm({
   className,
-  callbackUrl, 
+  callbackUrl,
   ...props
 }: {
   className?: string;
   callbackUrl: string;
 }) {
-  const auth = useAuth(); 
-  const router = useRouter(); 
+  const auth = useAuth();
+  const router = useRouter();
 
   const [formLock, setFormLock] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -84,25 +84,24 @@ export function LoginForm({
     },
   });
 
-
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Welcome back</CardTitle>
-          <CardDescription>
-            Login with your Google account
-          </CardDescription>
+          <CardDescription>Login with your Google account</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={(e) => {
-            e.preventDefault();
-            void form.handleSubmit();
-          }}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              void form.handleSubmit();
+            }}
+          >
             <FieldGroup>
               <Field>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   type="button"
                   onClick={async () => {
                     await authClient.signIn.social({
@@ -143,7 +142,9 @@ export function LoginForm({
                         placeholder="john.doe@example.com"
                         autoComplete="off"
                       />
-                      {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                      {isInvalid && (
+                        <FieldError errors={field.state.meta.errors} />
+                      )}
                     </Field>
                   );
                 }}
@@ -194,5 +195,5 @@ export function LoginForm({
         and <a href="#">Privacy Policy</a>.
       </FieldDescription>
     </div>
-  )
+  );
 }
