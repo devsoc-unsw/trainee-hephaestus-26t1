@@ -1,4 +1,6 @@
+"use client"
 import {Button} from "@/components/ui/button";
+import Link from "next/link";
 import {
   Card,
   CardHeader,
@@ -19,7 +21,9 @@ export default function Home() {
         {/* b. Right - Action Buttons */}
         <div className="flex gap-3">
           <Button variant="ghost">Sign up</Button>
-          <Button variant="secondary">Log in</Button>
+          <Link href='/login'>
+            <Button variant='secondary'>Log in</Button>
+          </Link>
         </div>
       </header>
 
