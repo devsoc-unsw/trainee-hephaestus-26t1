@@ -107,7 +107,7 @@ export function LoginForm({
                     await authClient.signIn.social({
                       provider: "google",
                       callbackURL: `${frontendUrl()}/${callbackUrl}`,
-                      newUserCallbackURL: `${frontendUrl()}/complete-sign-up?callbackUrl=${encodeURIComponent(callbackUrl)}`,
+                      newUserCallbackURL: `${frontendUrl()}/${callbackUrl}`,
                     });
                   }}
                 >
@@ -191,8 +191,8 @@ export function LoginForm({
         </CardContent>
       </Card>
       <FieldDescription className="px-6 text-center text-zinc-400">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <a href="#">Privacy Policy</a>.
+        By clicking login, you agree to our <a href="#">Terms of Service</a> and{" "}
+        <a href="#">Privacy Policy</a>.
       </FieldDescription>
     </div>
   );
