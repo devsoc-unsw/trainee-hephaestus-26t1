@@ -10,7 +10,6 @@ export type UserProfile = {
   avatarUrl: string | null;
 };
 
-
 /**
  * A type representing an API error.
  */

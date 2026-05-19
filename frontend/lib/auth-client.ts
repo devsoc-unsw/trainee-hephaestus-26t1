@@ -1,6 +1,6 @@
-import {createAuthClient} from "better-auth/react";
-import {usernameClient} from "better-auth/client/plugins";
-import {QueryClient} from "@tanstack/react-query";
+import { createAuthClient } from "better-auth/react";
+import { usernameClient } from "better-auth/client/plugins";
+import { QueryClient } from "@tanstack/react-query";
 
 export const authClient = createAuthClient({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
