@@ -1,8 +1,6 @@
 import axios from "axios";
-import {backendUrl} from "@/lib/utils";
-import {
-  UserProfile,
-} from "@/lib/types";
+import { backendUrl } from "@/lib/utils";
+import { UserProfile } from "@/lib/types";
 
 /**
  * Make a GET request to the backend and return the JSON response.
@@ -15,7 +13,7 @@ async function get<T>(path: string): Promise<T> {
  * Make an authenticated GET request to the backend and return the JSON response.
  */
 async function getAuthed<T>(path: string): Promise<T> {
-  return (await axios.get(`${backendUrl()}${path}`, {withCredentials: true}))
+  return (await axios.get(`${backendUrl()}${path}`, { withCredentials: true }))
     .data;
 }
 
@@ -25,7 +23,7 @@ async function getAuthed<T>(path: string): Promise<T> {
 async function getAuthedInternal<T>(path: string): Promise<T> {
   return (
     await axios.get(`${backendUrl()}${path}`, {
-      headers: {Authorization: `Bearer ${process.env.INTERNAL_API_KEY}`},
+      headers: { Authorization: `Bearer ${process.env.INTERNAL_API_KEY}` },
       withCredentials: true,
     })
   ).data;
@@ -36,7 +34,7 @@ async function getAuthedInternal<T>(path: string): Promise<T> {
  */
 async function postAuthed<T>(path: string, body: object): Promise<T> {
   return (
-    await axios.post(`${backendUrl()}${path}`, body, {withCredentials: true})
+    await axios.post(`${backendUrl()}${path}`, body, { withCredentials: true })
   ).data;
 }
 
@@ -45,7 +43,7 @@ async function postAuthed<T>(path: string, body: object): Promise<T> {
  */
 async function patchAuthed<T>(path: string, body: object): Promise<T> {
   return (
-    await axios.patch(`${backendUrl()}${path}`, body, {withCredentials: true})
+    await axios.patch(`${backendUrl()}${path}`, body, { withCredentials: true })
   ).data;
 }
 
@@ -54,7 +52,7 @@ async function patchAuthed<T>(path: string, body: object): Promise<T> {
  */
 async function deleteAuthed<T>(path: string): Promise<T> {
   return (
-    await axios.delete(`${backendUrl()}${path}`, {withCredentials: true})
+    await axios.delete(`${backendUrl()}${path}`, { withCredentials: true })
   ).data;
 }
 

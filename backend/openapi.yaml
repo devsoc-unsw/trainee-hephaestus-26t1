@@ -4,7 +4,7 @@ info:
   description: The backend for team Hephaestus' Termful project
   version: 1.0.0
 servers:
-  - url: 'https://termful-api.up.railway.app'
+  - url: "https://termful-api.up.railway.app"
 paths:
   /users/{userId}:
     get:
@@ -55,7 +55,7 @@ components:
         displayName:
           type: string
         avatarUrl:
-          type: [ string, "null" ]
+          type: [string, "null"]
       required:
         - id
         - username
@@ -67,7 +67,7 @@ components:
         displayName: Horizell
 
     NullableUser:
-      type: [ object, "null" ]
+      type: [object, "null"]
       properties:
         id:
           type: string
@@ -76,7 +76,7 @@ components:
         displayName:
           type: string
         avatarUrl:
-          type: [ string, "null" ]
+          type: [string, "null"]
       required:
         - id
         - username
@@ -98,7 +98,6 @@ components:
       example:
         code: 404
         message: User not found.
-
 
 tags:
   - name: Users
