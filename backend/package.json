@@ -29,6 +29,7 @@
     "start": "bun run db:migrate && bun run index.ts",
     "db:migrate": "bunx dbmate up",
     "db:rollback": "bunx dbmate rollback",
-    "db:create_migration": "bunx dbmate new"
+    "db:create_migration": "bunx dbmate new",
+    "format": "bunx prettier -w ."
   }
 }
