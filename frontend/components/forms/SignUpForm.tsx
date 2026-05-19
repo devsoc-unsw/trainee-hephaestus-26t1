@@ -1,5 +1,5 @@
 "use client";
-import { cn, frontendUrl } from "@/lib/utils";
+import { frontendUrl } from "@/lib/utils";
 import * as React from "react";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
@@ -8,12 +8,7 @@ import { useAuth } from "@/app/providers/AuthProvider";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Field,
   FieldDescription,
@@ -24,23 +19,17 @@ import {
 } from "@/components/ui/field";
 
 // Create signup form schema
-const signupSchema = z.object({
+const signupSchema = z
+  .object({
     name: z
       .string()
       .min(3, "Name must be at least 3 characters.")
       .max(32, "Name must be at most 32 characters.")
-      .regex(
-        /^[a-zA-Z0-9]+$/,
-        "Name must contain only numbers and letters."
-      ),
+      .regex(/^[a-zA-Z ]+$/, "Name must contain letters and spaces."),
 
-    email: z
-      .string()
-      .email("Please enter a valid email address."),
+    email: z.email("Please enter a valid email address."),
 
-    password: z
-      .string()
-      .min(8, "Password must be at least 8 characters."),
+    password: z.string().min(8, "Password must be at least 8 characters."),
 
     confirmPassword: z
       .string()
@@ -51,17 +40,17 @@ const signupSchema = z.object({
     path: ["confirmPassword"],
   });
 
-export function SignupForm({
-    className,
-    callbackUrl,
-    ...props
-  }: {
-    className?: string;
-    callbackUrl: string;
-  }) {
-    // Use auth and router
-    const auth = useAuth();
-    const router = useRouter();
+export function SignUpForm({
+  className,
+  callbackUrl,
+  ...props
+}: {
+  className?: string;
+  callbackUrl: string;
+}) {
+  // Use auth and router
+  const auth = useAuth();
+  const router = useRouter();
 
   const [loading, setLoading] = React.useState(false);
 
@@ -99,7 +88,7 @@ export function SignupForm({
             setLoading(false);
             alert(ctx.error.message);
           },
-        }
+        },
       );
     },
   });
@@ -107,9 +96,7 @@ export function SignupForm({
   return (
     <Card {...props} className={className}>
       <CardHeader className="text-center">
-        <CardTitle className="text-xl">
-          Create your account
-        </CardTitle>
+        <CardTitle className="text-xl">Create your account</CardTitle>
       </CardHeader>
 
       <CardContent>
@@ -124,16 +111,11 @@ export function SignupForm({
             <form.Field name="name">
               {(field) => {
                 const isInvalid =
-                  field.state.meta.isTouched &&
-                  !field.state.meta.isValid;
+                  field.state.meta.isTouched && !field.state.meta.isValid;
 
                 return (
-                  <Field
-                    data-invalid={isInvalid}
-                  >
-                    <FieldLabel htmlFor={field.name}>
-                      Full Name
-                    </FieldLabel>
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>Full Name</FieldLabel>
 
                     <Input
                       id={field.name}
@@ -142,17 +124,13 @@ export function SignupForm({
                       placeholder="John Doe"
                       value={field.state.value}
                       onBlur={field.handleBlur}
-                      onChange={(e) =>
-                        field.handleChange(e.target.value)
-                      }
+                      onChange={(e) => field.handleChange(e.target.value)}
                       aria-invalid={isInvalid}
                       autoComplete="off"
                     />
 
                     {isInvalid && (
-                      <FieldError
-                        errors={field.state.meta.errors}
-                      />
+                      <FieldError errors={field.state.meta.errors} />
                     )}
                   </Field>
                 );
@@ -162,16 +140,11 @@ export function SignupForm({
             <form.Field name="email">
               {(field) => {
                 const isInvalid =
-                  field.state.meta.isTouched &&
-                  !field.state.meta.isValid;
+                  field.state.meta.isTouched && !field.state.meta.isValid;
 
                 return (
-                  <Field
-                    data-invalid={isInvalid}
-                  >
-                    <FieldLabel htmlFor={field.name}>
-                      Email
-                    </FieldLabel>
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>Email</FieldLabel>
 
                     <Input
                       id={field.name}
@@ -180,17 +153,13 @@ export function SignupForm({
                       placeholder="m@example.com"
                       value={field.state.value}
                       onBlur={field.handleBlur}
-                      onChange={(e) =>
-                        field.handleChange(e.target.value)
-                      }
+                      onChange={(e) => field.handleChange(e.target.value)}
                       aria-invalid={isInvalid}
                       autoComplete="off"
                     />
 
                     {isInvalid && (
-                      <FieldError
-                        errors={field.state.meta.errors}
-                      />
+                      <FieldError errors={field.state.meta.errors} />
                     )}
                   </Field>
                 );
@@ -200,16 +169,11 @@ export function SignupForm({
             <form.Field name="password">
               {(field) => {
                 const isInvalid =
-                  field.state.meta.isTouched &&
-                  !field.state.meta.isValid;
+                  field.state.meta.isTouched && !field.state.meta.isValid;
 
                 return (
-                  <Field
-                    data-invalid={isInvalid}
-                  >
-                    <FieldLabel htmlFor={field.name}>
-                      Password
-                    </FieldLabel>
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>Password</FieldLabel>
 
                     <Input
                       id={field.name}
@@ -217,9 +181,7 @@ export function SignupForm({
                       type="password"
                       value={field.state.value}
                       onBlur={field.handleBlur}
-                      onChange={(e) =>
-                        field.handleChange(e.target.value)
-                      }
+                      onChange={(e) => field.handleChange(e.target.value)}
                       aria-invalid={isInvalid}
                       autoComplete="off"
                     />
@@ -229,9 +191,7 @@ export function SignupForm({
                     </FieldDescription>
 
                     {isInvalid && (
-                      <FieldError
-                        errors={field.state.meta.errors}
-                      />
+                      <FieldError errors={field.state.meta.errors} />
                     )}
                   </Field>
                 );
@@ -241,13 +201,10 @@ export function SignupForm({
             <form.Field name="confirmPassword">
               {(field) => {
                 const isInvalid =
-                  field.state.meta.isTouched &&
-                  !field.state.meta.isValid;
+                  field.state.meta.isTouched && !field.state.meta.isValid;
 
                 return (
-                  <Field
-                    data-invalid={isInvalid}
-                  >
+                  <Field data-invalid={isInvalid}>
                     <FieldLabel htmlFor={field.name}>
                       Confirm Password
                     </FieldLabel>
@@ -258,47 +215,35 @@ export function SignupForm({
                       type="password"
                       value={field.state.value}
                       onBlur={field.handleBlur}
-                      onChange={(e) =>
-                        field.handleChange(e.target.value)
-                      }
+                      onChange={(e) => field.handleChange(e.target.value)}
                       aria-invalid={isInvalid}
                       autoComplete="off"
                     />
 
                     {isInvalid && (
-                      <FieldError
-                        errors={field.state.meta.errors}
-                      />
+                      <FieldError errors={field.state.meta.errors} />
                     )}
                   </Field>
                 );
               }}
             </form.Field>
             <Field>
-              <Button
-                type="submit"
-                disabled={loading}
-              >
-                {loading
-                  ? "Creating Account..."
-                  : "Create Account"}
+              <Button type="submit" disabled={loading}>
+                {loading ? "Creating Account..." : "Create Account"}
               </Button>
             </Field>
 
-            <FieldSeparator>
-              Or continue with
-            </FieldSeparator>
+            <FieldSeparator>Or continue with</FieldSeparator>
             <Field>
               <Button
                 type="button"
                 variant="outline"
                 onClick={async () => {
-                    await authClient.signIn.social({
-                        provider: "google",
-                        callbackURL: `${frontendUrl()}${callbackUrl}`,
-                        newUserCallbackURL:
-                          `${frontendUrl()}/complete-sign-up?callbackUrl=${encodeURIComponent(callbackUrl)}`,
-                      });
+                  await authClient.signIn.social({
+                    provider: "google",
+                    callbackURL: `${frontendUrl()}${callbackUrl}`,
+                    newUserCallbackURL: `${frontendUrl()}/${callbackUrl}`,
+                  });
                 }}
               >
                 Sign up with Google
@@ -306,10 +251,7 @@ export function SignupForm({
 
               <FieldDescription className="px-6 text-center">
                 Already have an account?{" "}
-                <a
-                  href="/login"
-                  className="underline underline-offset-4"
-                >
+                <a href="/login" className="underline underline-offset-4">
                   Sign in
                 </a>
               </FieldDescription>
