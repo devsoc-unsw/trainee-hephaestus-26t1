@@ -5,7 +5,81 @@ info:
   version: 1.0.0
 servers:
   - url: "https://termful-api.up.railway.app"
+
+tags:
+  - name: Users
+    description: Routes relating to Termful users.
+  - name: Subjects
+    description: Routes relating to a user's study subjects.
+  - name: Sessions
+    description: Routes relating to a user's study sessions.
+  - name: Stats
+    description: Routes for aggregated study statistics.
+
 paths:
+  # ── Users ────────────────────────────────────────────────────────────────
+
+  /users/me:
+    get:
+      tags:
+        - Users
+      summary: Get the current authenticated user.
+      description: Returns the profile of the currently authenticated user.
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    patch:
+      tags:
+        - Users
+      summary: Update the current authenticated user's profile.
+      description: Updates one or more profile fields for the currently authenticated user.
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserBody"
+      responses:
+        "200":
+          description: Profile updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: Invalid request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Username already taken.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
   /users/{userId}:
     get:
       tags:
@@ -33,6 +107,410 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+  # ── Subjects ─────────────────────────────────────────────────────────────
+
+  /subjects:
+    get:
+      tags:
+        - Subjects
+      summary: List all subjects for the authenticated user.
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Subject"
+        "401":
+          description: Not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    post:
+      tags:
+        - Subjects
+      summary: Create a new subject.
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSubjectBody"
+      responses:
+        "201":
+          description: Subject created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subject"
+        "400":
+          description: Invalid request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /subjects/{subjectId}:
+    patch:
+      tags:
+        - Subjects
+      summary: Update a subject.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: subjectId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateSubjectBody"
+      responses:
+        "200":
+          description: Subject updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subject"
+        "400":
+          description: Invalid request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Subject not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    delete:
+      tags:
+        - Subjects
+      summary: Delete a subject.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: subjectId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Subject deleted successfully.
+        "401":
+          description: Not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Subject not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  # ── Sessions ──────────────────────────────────────────────────────────────
+
+  /sessions:
+    get:
+      tags:
+        - Sessions
+      summary: List all sessions for the authenticated user.
+      description: Returns sessions, optionally filtered by subject and/or date range.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: subjectId
+          in: query
+          description: Filter sessions by subject ID.
+          required: false
+          schema:
+            type: string
+        - name: from
+          in: query
+          description: Return sessions starting on or after this ISO 8601 date.
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          description: Return sessions starting on or before this ISO 8601 date.
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Session"
+        "401":
+          description: Not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    post:
+      tags:
+        - Sessions
+      summary: Start a new study session.
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSessionBody"
+      responses:
+        "201":
+          description: Session started successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Session"
+        "400":
+          description: Invalid request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /sessions/stats/daily:
+    get:
+      tags:
+        - Stats
+      summary: Get total study hours per day for a given week.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: week
+          in: query
+          description: ISO 8601 date of any day within the target week (defaults to the current week).
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DailyStat"
+        "401":
+          description: Not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /sessions/stats/weekly:
+    get:
+      tags:
+        - Stats
+      summary: Get total study hours per week for a given term.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: term
+          in: query
+          description: Term number to fetch weekly stats for (defaults to the current term).
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WeeklyStat"
+        "401":
+          description: Not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /sessions/stats/term:
+    get:
+      tags:
+        - Stats
+      summary: Get total study hours and per-subject breakdown for a given term.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: term
+          in: query
+          description: Term number to fetch stats for (defaults to the current term).
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TermStat"
+        "401":
+          description: Not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /sessions/{sessionId}:
+    get:
+      tags:
+        - Sessions
+      summary: Get a single session by ID.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Session"
+        "401":
+          description: Not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Session not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    patch:
+      tags:
+        - Sessions
+      summary: End or update a session.
+      description: Used to set the end time, duration, and/or notes on a session.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateSessionBody"
+      responses:
+        "200":
+          description: Session updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Session"
+        "400":
+          description: Invalid request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Session not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    delete:
+      tags:
+        - Sessions
+      summary: Delete a session.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Session deleted successfully.
+        "401":
+          description: Not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Session not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
 components:
   securitySchemes:
     cookieAuth:
@@ -45,6 +523,8 @@ components:
       scheme: Bearer
 
   schemas:
+    # ── Users ──────────────────────────────────────────────────────────────
+
     User:
       type: object
       properties:
@@ -65,6 +545,7 @@ components:
         id: "12345676543245"
         username: horizell
         displayName: Horizell
+        avatarUrl: null
 
     NullableUser:
       type: [object, "null"]
@@ -86,6 +567,243 @@ components:
         id: "12345676543245"
         username: horizell
         displayName: Horizell
+        avatarUrl: null
+
+    UpdateUserBody:
+      type: object
+      properties:
+        username:
+          type: string
+        displayName:
+          type: string
+        avatarUrl:
+          type: [string, "null"]
+      example:
+        displayName: Horizell II
+
+    # ── Subjects ───────────────────────────────────────────────────────────
+
+    Subject:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        name:
+          type: string
+        colour:
+          type: string
+          description: Hex colour code for the subject (e.g. "#a855f7").
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - userId
+        - name
+        - colour
+        - createdAt
+      example:
+        id: "98765432198765"
+        userId: "12345676543245"
+        name: COMP1511
+        colour: "#a855f7"
+        createdAt: "2026-03-01T09:00:00Z"
+
+    CreateSubjectBody:
+      type: object
+      properties:
+        name:
+          type: string
+        colour:
+          type: string
+          description: Hex colour code (e.g. "#a855f7").
+      required:
+        - name
+        - colour
+      example:
+        name: COMP1511
+        colour: "#a855f7"
+
+    UpdateSubjectBody:
+      type: object
+      properties:
+        name:
+          type: string
+        colour:
+          type: string
+      example:
+        colour: "#6366f1"
+
+    # ── Sessions ───────────────────────────────────────────────────────────
+
+    Session:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        subjectId:
+          type: string
+        mode:
+          type: string
+          enum: [timer, stopwatch]
+        startedAt:
+          type: string
+          format: date-time
+        endedAt:
+          type: [string, "null"]
+          format: date-time
+        durationSeconds:
+          type: [integer, "null"]
+          description: Total session duration in seconds, set when the session ends.
+        notes:
+          type: [string, "null"]
+      required:
+        - id
+        - userId
+        - subjectId
+        - mode
+        - startedAt
+        - endedAt
+        - durationSeconds
+        - notes
+      example:
+        id: "11223344556677"
+        userId: "12345676543245"
+        subjectId: "98765432198765"
+        mode: timer
+        startedAt: "2026-03-10T10:00:00Z"
+        endedAt: "2026-03-10T11:30:00Z"
+        durationSeconds: 5400
+        notes: "Finished assignment 1"
+
+    CreateSessionBody:
+      type: object
+      properties:
+        subjectId:
+          type: string
+        mode:
+          type: string
+          enum: [timer, stopwatch]
+        startedAt:
+          type: string
+          format: date-time
+          description: Defaults to the current time if omitted.
+      required:
+        - subjectId
+        - mode
+      example:
+        subjectId: "98765432198765"
+        mode: timer
+
+    UpdateSessionBody:
+      type: object
+      properties:
+        endedAt:
+          type: string
+          format: date-time
+        durationSeconds:
+          type: integer
+        notes:
+          type: string
+      example:
+        endedAt: "2026-03-10T11:30:00Z"
+        durationSeconds: 5400
+        notes: "Finished assignment 1"
+
+    # ── Stats ──────────────────────────────────────────────────────────────
+
+    SubjectBreakdown:
+      type: object
+      properties:
+        subjectId:
+          type: string
+        subjectName:
+          type: string
+        colour:
+          type: string
+        totalSeconds:
+          type: integer
+      required:
+        - subjectId
+        - subjectName
+        - colour
+        - totalSeconds
+
+    DailyStat:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        totalSeconds:
+          type: integer
+        breakdown:
+          type: array
+          items:
+            $ref: "#/components/schemas/SubjectBreakdown"
+      required:
+        - date
+        - totalSeconds
+        - breakdown
+      example:
+        date: "2026-03-10"
+        totalSeconds: 7200
+        breakdown:
+          - subjectId: "98765432198765"
+            subjectName: COMP1511
+            colour: "#a855f7"
+            totalSeconds: 7200
+
+    WeeklyStat:
+      type: object
+      properties:
+        weekNumber:
+          type: integer
+          description: Week number within the term (1-indexed).
+        startDate:
+          type: string
+          format: date
+        totalSeconds:
+          type: integer
+        breakdown:
+          type: array
+          items:
+            $ref: "#/components/schemas/SubjectBreakdown"
+      required:
+        - weekNumber
+        - startDate
+        - totalSeconds
+        - breakdown
+
+    TermStat:
+      type: object
+      properties:
+        term:
+          type: integer
+        totalSeconds:
+          type: integer
+        breakdown:
+          type: array
+          items:
+            $ref: "#/components/schemas/SubjectBreakdown"
+      required:
+        - term
+        - totalSeconds
+        - breakdown
+      example:
+        term: 1
+        totalSeconds: 432000
+        breakdown:
+          - subjectId: "98765432198765"
+            subjectName: COMP1511
+            colour: "#a855f7"
+            totalSeconds: 216000
+
+    # ── Shared ─────────────────────────────────────────────────────────────
 
     Error:
       type: object
@@ -95,10 +813,9 @@ components:
           format: i32
         message:
           type: string
+      required:
+        - code
+        - message
       example:
         code: 404
-        message: User not found.
-
-tags:
-  - name: Users
-    description: Routes relating to Termful users.
+        message: Not found.

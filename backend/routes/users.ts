@@ -5,6 +5,20 @@ import { getUser } from "../queries/users.ts";
 const router = Router();
 
 /**
+ * Get the current authenticated user's profile.
+ */
+router.get("/me", async (req, res) => {
+  res.status(501).json({ code: 501, message: "Not implemented." });
+});
+
+/**
+ * Update the current authenticated user's profile.
+ */
+router.patch("/me", async (req, res) => {
+  res.status(501).json({ code: 501, message: "Not implemented." });
+});
+
+/**
  * Fetch a user using their ID.
  */
 router.get("/:userId", async (req, res) => {
