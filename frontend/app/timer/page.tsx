@@ -67,7 +67,7 @@ export default function Page() {
   const handleTimerClick = (): void => {
     setIsActive(false);
     setIsEditing(true);
-    setInputValue(formatTime(initialTime)); // Prefill with initial time
+    setInputValue(formatTime(timeLeft)); // Prefill so user can edit current time left
   };
 
   // Update temp state as the user types
@@ -109,6 +109,14 @@ export default function Page() {
     }
   };
 
+  // 4. CIRCLE UI
+  // SVG Circle Calculations
+  const radius = 140;
+  const circumference = 2 * Math.PI * radius;
+  // Cover edge case to prevent division by 0
+  const progress = initialTime > 0 ? timeLeft / initialTime : 0;
+  const strokeDashoffset = circumference - progress * circumference;
+
   return (
     <div className="flex min-h-screen flex-col bg-zinc-950 bg-[radial-gradient(circle_at_20%_80%,oklch(0.55_0.15_240/0.35),transparent_70%),radial-gradient(circle_at_50%_30%,oklch(0.50_0.25_300/0.4),transparent_80%),radial-gradient(circle_at_80%_20%,oklch(0.40_0.12_260/0.25),transparent_70%)] font-sans text-zinc-100">
       {/* 1. NAV BAR */}
@@ -132,39 +140,99 @@ export default function Page() {
       </header>
 
       {/* 2. MAIN */}
-      <main className="flex-1 px-6">
-        {/* a. Top: Hero Section */}
-        <section className="flex flex-col items-center justify-center gap-6 px-4 pt-32 pb-24 text-center">
-          {/* Header Text */}
-          <h1 className="text-4xl tracking-tight sm:text-6xl">Focus Timer.</h1>
+      <main className="flex flex-1 flex-col items-center justify-center">
+        <section className="flex flex-col items-center justify-center text-center">
+          {/* a. Header Text */}
+          <h1 className="text-4xl tracking-tight sm:text-6xl">focus time.</h1>
 
-          {/* Timer UI with Inline Editing*/}
-          {isEditing ? (
-            <input
-              type="text"
-              value={inputValue}
-              onChange={handleInputChange}
-              onBlur={handleInputSubmit}
-              onKeyDown={handleKeyDown}
-              autoFocus
-              className="w-64 bg-transparent text-center text-7xl font-light tracking-tight tabular-nums outline-none focus:ring-0"
-            />
-          ) : (
-            <div
-              onClick={handleTimerClick}
-              className="cursor-pointer text-7xl font-light tracking-tight tabular-nums transition-all hover:text-zinc-300"
-              title="Click to edit time"
+          {/* b. Timer UI: Pops out when timer is on*/}
+          <div
+            className={`relative mt-20 mb-20 flex h-80 w-80 items-center justify-center transition-all duration-700 ease-in-out ${
+              isActive ? "scale-105" : "scale-100"
+            }`}
+          >
+            {/* i. Outer 'Breathing' Aura: Visible only when timer on*/}
+            <svg
+              className={`absolute h-full w-full overflow-visible transition-opacity duration-1000 ${
+                isActive ? "opacity-100" : "opacity-0"
+              }`}
             >
-              {formatTime(timeLeft)}
-            </div>
-          )}
+              <circle
+                cx={radius + 20}
+                cy={radius + 20}
+                /* Adjust overlap with (ii) Main Countdown Ring */
+                r={radius + 15}
+                stroke="currentColor"
+                strokeWidth="24" /* Thicker stroke for a wider glow */
+                fill="transparent"
+                className={`text-purple-500/70 blur-xl ${
+                  isActive ? "animate-[pulse_5s_ease-in-out_infinite]" : ""
+                }`}
+              />
+            </svg>
 
-          {/* Action Buttons - Start/Pause & Reset */}
+            {/* ii. Inner Main Countdown Rings */}
+            <svg className="absolute h-full w-full -rotate-90 transform overflow-visible">
+              {/* [Optional] Faint Background Track */}
+              {/* <circle
+                cx={radius + 20}
+                cy={radius + 20}
+                r={radius}
+                stroke="currentColor"
+                strokeWidth="2"
+                fill="transparent"
+                className="text-white/5"
+              /> */}
+              {/* Active 'Draining' Ring */}
+              <circle
+                cx={radius + 20}
+                cy={radius + 20}
+                r={radius}
+                stroke="currentColor"
+                strokeWidth="6"
+                fill="transparent"
+                strokeLinecap="round"
+                strokeDasharray={circumference}
+                strokeDashoffset={strokeDashoffset}
+                className={`text-purple-300 transition-all duration-1000 ease-linear`}
+              />
+            </svg>
+
+            {/* iii. Interactive Timer Text with Inline Editing  */}
+            <div className="z-10">
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={inputValue}
+                  onChange={handleInputChange}
+                  onBlur={handleInputSubmit}
+                  onKeyDown={handleKeyDown}
+                  autoFocus
+                  className="w-64 bg-transparent text-center text-7xl font-light tracking-tight tabular-nums outline-none focus:ring-0"
+                />
+              ) : (
+                <div
+                  onClick={handleTimerClick}
+                  className="cursor-pointer text-7xl font-light tracking-tight tabular-nums transition-all hover:text-zinc-300"
+                  title="Click to edit time"
+                >
+                  {formatTime(timeLeft)}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* c. Action Buttons - Start/Pause & Reset */}
           <div className="mt-4 flex gap-4">
-            <Button size="lg" className="w-32 text-lg" onClick={toggleTimer}>
+            <Button size="lg" className="w-40 text-lg" onClick={toggleTimer}>
               {isActive ? "Pause" : "Start"}
             </Button>
-            <Button size="lg" variant="secondary" onClick={resetTimer}>
+            <Button
+              size="lg"
+              variant="secondary"
+              className="w-34 text-lg"
+              onClick={resetTimer}
+            >
               Reset
             </Button>
           </div>
