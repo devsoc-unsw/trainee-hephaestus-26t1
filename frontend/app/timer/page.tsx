@@ -7,6 +7,8 @@ import { redirect, useSearchParams } from "next/navigation";
 import { useAuth } from "@/app/providers/AuthProvider";
 import React, { useState, useEffect } from "react";
 
+type TimerMode = "focus" | "shortBreak" | "longBreak";
+
 export default function Page() {
   // 0. AUTH STATE
   const { session } = useAuth();
@@ -19,36 +21,20 @@ export default function Page() {
   }
 
   // 1. TIMER + BUTTON STATE
+  // Default duration constants (in secs)
+  const FOCUS_TIME = 25 * 60;
+  const SHORT_BREAK_TIME = 5 * 60;
+  const LONG_BREAK_TIME = 15 * 60;
   const [initialTime, setInitialTime] = useState<number>(25 * 60);
   const [timeLeft, setTimeLeft] = useState<number>(25 * 60);
   const [isActive, setIsActive] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>("");
+  const [mode, setMode] = useState<TimerMode>("focus");
+  const [sessionsCompleted, setSessionsCompleted] = useState<number>(0);
+  const [customFocusTime, setCustomFocusTime] = useState<number>(FOCUS_TIME);
 
-  // 2. TIMER CLOCK LOGIC
-  useEffect(() => {
-    let interval: NodeJS.Timeout | undefined;
-
-    // a. If timer is active but has reached 0, turn off
-    if (isActive && timeLeft === 0) {
-      const timeoutId = setTimeout(() => {
-        setIsActive(false);
-      }, 0);
-      return () => clearTimeout(timeoutId);
-    }
-
-    // b. If timer is active and time remains, countdown the time
-    else if (isActive && timeLeft > 0) {
-      interval = setInterval(() => {
-        setTimeLeft((prev) => prev - 1);
-      }, 1000);
-    }
-
-    // c. Cleanup function
-    return () => clearInterval(interval);
-  }, [isActive, timeLeft]);
-
-  // 3. HELPERS: Onclicks for Start/Pause and Reset Buttons + Time formatter
+  // 2. HELPERS: Onclicks for Start/Pause and Reset Buttons + Time formatter
   const toggleTimer = (): void => setIsActive(!isActive);
   const resetTimer = (): void => {
     setIsActive(false);
@@ -99,6 +85,9 @@ export default function Page() {
     if (totalSeconds > 0) {
       setInitialTime(totalSeconds);
       setTimeLeft(totalSeconds);
+      if (mode === "focus") {
+        setCustomFocusTime(totalSeconds);
+      }
     }
   };
 
@@ -109,6 +98,59 @@ export default function Page() {
     }
   };
 
+  // Helpers for switch between focus and break modes
+  const switchMode = (newMode: TimerMode): void => {
+    setIsActive(false);
+    setMode(newMode);
+
+    let newTime = customFocusTime;
+    if (newMode === "shortBreak") newTime = SHORT_BREAK_TIME;
+    if (newMode === "longBreak") newTime = LONG_BREAK_TIME;
+
+    setInitialTime(newTime);
+    setTimeLeft(newTime);
+  };
+
+  const handleSessionComplete = (): void => {
+    if (mode === "focus") {
+      const newSessionCount = sessionsCompleted + 1;
+      setSessionsCompleted(newSessionCount);
+
+      // Trigger long break every 4th session
+      if (newSessionCount % 4 === 0) {
+        switchMode("longBreak");
+      } else {
+        switchMode("shortBreak");
+      }
+    } else
+      // If a break finishes, go back to focus mode
+      switchMode("focus");
+  };
+
+  // 3. TIMER CLOCK LOGIC
+  useEffect(() => {
+    let interval: NodeJS.Timeout | undefined;
+
+    // a. If timer is active but has reached 0, turn off
+    if (isActive && timeLeft === 0) {
+      const timeoutId = setTimeout(() => {
+        setIsActive(false);
+        handleSessionComplete();
+      }, 0);
+      return () => clearTimeout(timeoutId);
+    }
+
+    // b. If timer is active and time remains, countdown the time
+    else if (isActive && timeLeft > 0) {
+      interval = setInterval(() => {
+        setTimeLeft((prev) => prev - 1);
+      }, 1000);
+    }
+
+    // c. Cleanup function
+    return () => clearInterval(interval);
+  }, [isActive, timeLeft, mode, sessionsCompleted]);
+
   // 4. CIRCLE UI
   // SVG Circle Calculations
   const radius = 140;
@@ -116,6 +158,11 @@ export default function Page() {
   // Cover edge case to prevent division by 0
   const progress = initialTime > 0 ? timeLeft / initialTime : 0;
   const strokeDashoffset = circumference - progress * circumference;
+
+  // 5. MODE: Dynamic colours based on mode
+  const isFocus = mode === "focus";
+  const auraColor = isFocus ? "text-purple-500/70" : "text-emerald-500/70";
+  const ringColor = isFocus ? "text-purple-300" : "text-emerald-300";
 
   return (
     <div className="flex min-h-screen flex-col bg-zinc-950 bg-[radial-gradient(circle_at_20%_80%,oklch(0.55_0.15_240/0.35),transparent_70%),radial-gradient(circle_at_50%_30%,oklch(0.50_0.25_300/0.4),transparent_80%),radial-gradient(circle_at_80%_20%,oklch(0.40_0.12_260/0.25),transparent_70%)] font-sans text-zinc-100">
@@ -141,13 +188,48 @@ export default function Page() {
 
       {/* 2. MAIN */}
       <main className="flex flex-1 flex-col items-center justify-center">
-        <section className="flex flex-col items-center justify-center text-center">
-          {/* a. Header Text */}
-          <h1 className="text-4xl tracking-tight sm:text-6xl">focus time.</h1>
+        <section className="flex flex-col items-center justify-center gap-10 text-center">
+          {/* a. Header Text & Mode Selector: Dynamically change to focus or break time */}
+          <div className="flex flex-col gap-4">
+            <h1 className="text-3xl tracking-tight sm:text-5xl">
+              {mode === "focus" ? "focus time." : "break time."}
+            </h1>
+
+            {/* Mode Selectors */}
+            <div
+              className={`flex gap-2 rounded-full border border-white/10 bg-zinc-900/50 p-1 transition-all duration-500 ${
+                isActive
+                  ? "pointer-events-none opacity-0 select-none"
+                  : "opacity-100"
+              }`}
+            >
+              <Button
+                variant={mode === "focus" ? "default" : "ghost"}
+                className="rounded-full"
+                onClick={() => switchMode("focus")}
+              >
+                Focus
+              </Button>
+              <Button
+                variant={mode === "shortBreak" ? "default" : "ghost"}
+                className="rounded-full"
+                onClick={() => switchMode("shortBreak")}
+              >
+                Short Break
+              </Button>
+              <Button
+                variant={mode === "longBreak" ? "default" : "ghost"}
+                className="rounded-full"
+                onClick={() => switchMode("longBreak")}
+              >
+                Long Break
+              </Button>
+            </div>
+          </div>
 
           {/* b. Timer UI: Pops out when timer is on*/}
           <div
-            className={`relative mt-20 mb-20 flex h-80 w-80 items-center justify-center transition-all duration-700 ease-in-out ${
+            className={`relative flex h-80 w-80 items-center justify-center transition-all duration-700 ease-in-out ${
               isActive ? "scale-105" : "scale-100"
             }`}
           >
@@ -165,7 +247,7 @@ export default function Page() {
                 stroke="currentColor"
                 strokeWidth="24" /* Thicker stroke for a wider glow */
                 fill="transparent"
-                className={`text-purple-500/70 blur-xl ${
+                className={`${auraColor} blur-xl ${
                   isActive ? "animate-[pulse_5s_ease-in-out_infinite]" : ""
                 }`}
               />
@@ -194,7 +276,7 @@ export default function Page() {
                 strokeLinecap="round"
                 strokeDasharray={circumference}
                 strokeDashoffset={strokeDashoffset}
-                className={`text-purple-300 transition-all duration-1000 ease-linear`}
+                className={`${ringColor} transition-all duration-1000 ease-linear`}
               />
             </svg>
 
@@ -222,7 +304,8 @@ export default function Page() {
             </div>
           </div>
 
-          {/* c. Action Buttons - Start/Pause & Reset */}
+          {/* c. Action Buttons */}
+          {/* Start/Pause & Reset Buttons */}
           <div className="mt-4 flex gap-4">
             <Button size="lg" className="w-40 text-lg" onClick={toggleTimer}>
               {isActive ? "Pause" : "Start"}
