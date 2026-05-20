@@ -32,7 +32,7 @@ router.get("/:userId", async (req, res) => {
 router.use(requireAuth);
 
 /**
- * Update an existing room.
+ * Modify the user with the given ID.
  */
 router.patch("/:roomId", async (req: userIdReq, res) => {
   // Get user from request

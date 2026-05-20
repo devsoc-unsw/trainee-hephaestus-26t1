@@ -19,3 +19,10 @@ export type UserPatch = {
   year?: number | null;
   major?: string | null;
 };
+
+/**
+ * A type representing the body of a course create request.
+ */
+export type CourseCreate = {
+  name: string;
+};
