@@ -35,7 +35,7 @@ paths:
 
     patch:
       security:
-        - cookieAuth: []
+        - cookieAuth: [ ]
       tags:
         - Users
       summary: Modify a user with a given ID.
@@ -84,7 +84,7 @@ paths:
   /courses/{term}:
     get:
       security:
-        - cookieAuth: []
+        - cookieAuth: [ ]
       tags:
         - Courses
       summary: Get the courses for a user's term.
@@ -123,7 +123,7 @@ paths:
 
     post:
       security:
-        - cookieAuth: []
+        - cookieAuth: [ ]
       tags:
         - Courses
       summary: Add a new course to the specified term.
@@ -156,6 +156,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "409":
+          description: Course with given name already exists.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "422":
           description: Invalid fields provided.
           content:
@@ -166,7 +172,7 @@ paths:
   /courses/{term}/{course}:
     delete:
       security:
-        - cookieAuth: []
+        - cookieAuth: [ ]
       tags:
         - Courses
       summary: Delete a course from the specified term.
@@ -233,7 +239,7 @@ paths:
 
     post:
       security:
-        - cookieAuth: []
+        - cookieAuth: [ ]
       tags:
         - Sessions
       summary: Create a new session.
@@ -267,7 +273,7 @@ paths:
   /sessions/{sessionId}:
     patch:
       security:
-        - cookieAuth: []
+        - cookieAuth: [ ]
       tags:
         - Sessions
       summary: Update an existing session.
@@ -303,7 +309,7 @@ paths:
 
     delete:
       security:
-        - cookieAuth: []
+        - cookieAuth: [ ]
       tags:
         - Sessions
       summary: Delete an existing session.
@@ -351,11 +357,11 @@ components:
         name:
           type: string
         avatarUrl:
-          type: [string, "null"]
+          type: [ string, "null" ]
         year:
-          type: [integer, "null"]
+          type: [ integer, "null" ]
         major:
-          type: [string, "null"]
+          type: [ string, "null" ]
       required:
         - id
         - name
@@ -373,9 +379,9 @@ components:
         name:
           type: string
         year:
-          type: [integer, "null"]
+          type: [ integer, "null" ]
         major:
-          type: [string, "null"]
+          type: [ string, "null" ]
       example:
         year: 1
         major: Computer Science
