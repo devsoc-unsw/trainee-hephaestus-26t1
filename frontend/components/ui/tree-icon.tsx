@@ -137,7 +137,7 @@ function TreeIcon({
         <path
           d="M31.7933 15.4397C31.8589 15.1201 32.3157 15.1201 32.3812 15.4397L35.226 29.3167C35.298 29.6672 35.6227 29.9068 35.9789 29.8723L48.6439 28.6409C48.9524 28.6109 49.0986 29.0114 48.8431 29.1868L37.8373 36.7307C37.5724 36.9124 37.4656 37.251 37.5775 37.552L42.5316 50.8821C42.6433 51.1827 42.2691 51.4253 42.0404 51.2005L32.5785 41.8919C32.3061 41.6239 31.8685 41.6239 31.5961 41.8919L22.1342 51.2005C21.9055 51.425 21.5314 51.1826 21.6429 50.8821L26.598 37.552C26.7098 37.251 26.6022 36.9123 26.3373 36.7307L15.3314 29.1868C15.0763 29.0113 15.2222 28.6109 15.5306 28.6409L28.1957 29.8723C28.5519 29.9069 28.8765 29.6673 28.9486 29.3167L31.7933 15.4397Z"
           stroke="#ECECEC"
-          stroke-width="0.4"
+          strokeWidth="0.4"
         />
       </g>
       <defs>
@@ -148,9 +148,9 @@ function TreeIcon({
           width="64.1748"
           height="66.4895"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feColorMatrix
             in="SourceAlpha"
             type="matrix"

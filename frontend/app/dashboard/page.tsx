@@ -1,11 +1,62 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import CourseIcon from "@/components/ui/course-icon";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 import TreeIcon from "@/components/ui/tree-icon";
+import { Plus, Trash, X, CornerDownLeft } from "lucide-react";
+import { useState } from "react";
+type Course = {
+  id: number;
+  code: string;
+};
 
 export default function Page() {
   const blue = "#1d2cff";
   const pink = "#ff9dcb";
   const cyan = "#28cdff";
+
+  const [courses, setCourses] = useState<Course[]>([
+    { id: 1, code: "COMP1511" },
+    { id: 2, code: "COMP1521" },
+  ]);
+
+  const courseColors = ["#1d2cff", "#ff9dcb", "#28cdff"];
+
+  const [isAddCourse, setIsAddCourse] = useState(false);
+  const [newCourse, setNewCourse] = useState("");
+  const courseLength = Object.values(courses).length;
+
+  /**
+   * Add New Course
+   */
+  const addCourse = () => {
+    const formatted = newCourse.trim().toUpperCase();
+    if (!formatted) return;
+    const duplicate = courses.some((course) => course.code === formatted);
+    if (duplicate) return;
+
+    const newItem: Course = {
+      id: courses.length + 1,
+      code: formatted,
+    };
+    setCourses([...courses, newItem]);
+
+    setNewCourse("");
+    setIsAddCourse(false);
+  };
+
+  /**
+   * Remove Course
+   */
+  const removeCourse = (id: number) => {
+    setCourses(courses.filter((course) => course.id !== id));
+  };
 
   return (
     <div className="flex min-h-svh flex-col gap-6 bg-zinc-950 bg-[radial-gradient(circle_at_20%_80%,oklch(0.55_0.15_240/0.35),transparent_70%),radial-gradient(circle_at_50%_30%,oklch(0.50_0.25_300/0.4),transparent_80%),radial-gradient(circle_at_80%_20%,oklch(0.40_0.12_260/0.25),transparent_70%)] md:p-10">
@@ -23,21 +74,77 @@ export default function Page() {
       {/* CONTENT */}
       <div className="flex flex-row items-center justify-center gap-40">
         {/* COURSE LEGEND */}
-        <div className="items-left flex h-50 w-50 flex-col justify-center rounded-md border-3 border-white p-4 shadow-xl/80 shadow-cyan-500/50">
-          <div className="flex flex-row items-center">
-            <CourseIcon colour={cyan}></CourseIcon>
-            <h3 className="text-white">course 1</h3>
-          </div>
+        <div className="items-left relative flex h-auto w-70 flex-col justify-center rounded-md border-3 border-white p-4 shadow-xl/80 shadow-cyan-500/50">
+          {courses.map((course, index) => (
+            <div key={course.id} className="flex items-center gap-2">
+              {/* ICON */}
+              <div className="flex w-15 justify-center">
+                <CourseIcon colour={courseColors[index]} />
+              </div>
 
-          <div className="flex flex-row items-center">
-            <CourseIcon colour={pink}></CourseIcon>
-            <h3 className="text-white">course 2</h3>
-          </div>
+              {/* COURSE NAME */}
+              <div className="min-w-0 flex-1">
+                <span className="break-all text-white">{course.code}</span>
+              </div>
 
-          <div className="flex flex-row items-center">
-            <CourseIcon colour={blue}></CourseIcon>
-            <h3 className="text-white">course 3</h3>
-          </div>
+              {/* ACTION */}
+              <div className="flex w-8 justify-center">
+                <button
+                  className="flex-end flex rounded-full border border-purple-500/20 bg-purple-500/10 p-2 transition-transform duration-200 hover:scale-110"
+                  onClick={() => removeCourse(course.id)}
+                >
+                  <Trash className="h-3 w-3 text-purple-300" />
+                </button>
+              </div>
+            </div>
+          ))}
+
+          {courseLength < 3 && (
+            <div className="flex items-center gap-2">
+              {isAddCourse ? (
+                <>
+                  {/* INPUT AREA */}
+                  <div className="flex-1">
+                    <InputGroup className="bg-white">
+                      <InputGroupInput
+                        placeholder="Enter course..."
+                        className="h-8 w-10 px-2 py-1 text-sm"
+                        value={newCourse}
+                        onChange={(e) => {
+                          setNewCourse(e.target.value);
+                        }}
+                      />
+                      <InputGroupAddon align="inline-end">
+                        <InputGroupButton
+                          variant="secondary"
+                          className="text-sm"
+                          onClick={addCourse}
+                        >
+                          <CornerDownLeft />
+                        </InputGroupButton>
+                      </InputGroupAddon>
+                    </InputGroup>
+                  </div>
+
+                  {/* CANCEL BUTTON */}
+                  <button
+                    className="flex h-8 w-8 items-center justify-center rounded-full border border-purple-500/20 bg-purple-500/10 transition-transform duration-200 hover:scale-110"
+                    onClick={() => {
+                      setIsAddCourse(false);
+                    }}
+                  >
+                    <X className="h-3 w-3 text-purple-300" />
+                  </button>
+                </>
+              ) : (
+                /* ADD COURSE BUTTON */ 
+                <Button className="w-full" onClick={() => setIsAddCourse(true)}>
+                  <Plus />
+                  Add Course
+                </Button>
+              )}
+            </div>
+          )}
         </div>
 
         {/* TREE */}
