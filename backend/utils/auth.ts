@@ -1,6 +1,5 @@
 import { betterAuth } from "better-auth";
 import { database } from "./database.ts";
-import { username } from "better-auth/plugins";
 import generator from "./snowflake.ts";
 
 export const auth = betterAuth({
@@ -16,12 +15,7 @@ export const auth = betterAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     },
   },
-  plugins: [
-    username({
-      minUsernameLength: 3,
-      maxUsernameLength: 20,
-    }),
-  ],
+  plugins: [],
   account: {
     modelName: "accounts",
     accountLinking: {
