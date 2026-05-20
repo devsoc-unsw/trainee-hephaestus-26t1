@@ -53,6 +53,71 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/UserPatch"
+      responses:
+        "204":
+          description: Successfully updated room.
+        "401":
+          description: Not Authorised.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: User does not have the permission to edit this user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: User with given ID not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Invalid fields provided.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /courses/{term}:
+    get:
+      tags:
+        - Users
+      summary: Get the courses for a user's term.
+      description: Fetch a Termful user's courses for a given term.
+      parameters:
+        - name: term
+          in: path
+          description: The term to fetch the courses the user is enrolled in.
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rooms:
+                    type: array
+                    items:
+                      type: string
+        "401":
+          description: Not Authorised.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Term with given name not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
 components:
   securitySchemes:
