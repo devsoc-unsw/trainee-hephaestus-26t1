@@ -3,16 +3,17 @@
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { useAuth } from "@/app/providers/AuthProvider";
 import React, { useState, useEffect } from "react";
-import { getAuthed, postAuthed } from "@/lib/api";
+import { getCourses, createSession } from "@/lib/api";
 
 type TimerMode = "focus" | "shortBreak" | "longBreak";
 
 // Dummy data for courses (should be fetched from backend)
 const COURSES = [
   "COMP1511: Programming Fundamentals",
-  "COMP6080: Frontend Web Prog",
+  "COMP6080: Frontend Web Programming",
 ];
 
 const TASKS = [
@@ -40,9 +41,9 @@ export default function Page() {
   const { session } = useAuth();
 
   // If user is not logged in, redirect to sign-in page
-  // if (session === null) {
-  //   redirect("/signin");
-  // }
+  if (session === null) {
+    redirect("/signin");
+  }
 
   // 1. TIMER + BUTTON STATE
   // Default duration constants (in secs)
@@ -72,17 +73,8 @@ export default function Page() {
     const fetchCourses = async () => {
       try {
         const currentTerm = getCurrentTerm();
-        const data = await getAuthed<{ courses?: string[] }>(
-          `/courses/${currentTerm}`,
-        );
-        const fetchedCourses =
-          data.courses || (Array.isArray(data) ? data : []);
-
-        if (Array.isArray(fetchedCourses)) {
-          setCourses(fetchedCourses);
-        } else {
-          console.error("Unexpected course data format:", data);
-        }
+        const fetchedCourses = await getCourses(currentTerm);
+        setCourses(fetchedCourses);
       } catch (error) {
         console.error("Failed to fetch courses:", error);
       } finally {
@@ -186,7 +178,7 @@ export default function Page() {
     if (mode === "focus") {
       // a. Fire completed session to the backend
       try {
-        await postAuthed("/sessions", {
+        await createSession({
           course: selectedCourse,
           task: selectedTask || "Other", // If no task selected, fallback to 'Other'
           session_time: new Date().toISOString(),
@@ -443,7 +435,7 @@ export default function Page() {
                       ? "Loading courses..."
                       : "Select a course"}
                   </option>
-                  {COURSES.map((courseName, index) => (
+                  {courses.map((courseName, index) => (
                     <option key={index} value={courseName}>
                       {courseName}
                     </option>
