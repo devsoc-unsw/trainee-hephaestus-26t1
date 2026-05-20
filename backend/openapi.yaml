@@ -35,7 +35,7 @@ paths:
 
     patch:
       security:
-        - cookieAuth: []
+        - cookieAuth: [ ]
       tags:
         - Users
       summary: Modify a user with a given ID.
@@ -55,7 +55,7 @@ paths:
               $ref: "#/components/schemas/UserPatch"
       responses:
         "204":
-          description: Successfully updated room.
+          description: Successfully updated user.
         "401":
           description: Not Authorised.
           content:
@@ -102,7 +102,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  rooms:
+                  courses:
                     type: array
                     items:
                       type: string
@@ -121,7 +121,7 @@ paths:
 
     post:
       security:
-        - cookieAuth: []
+        - cookieAuth: [ ]
       tags:
         - Courses
       summary: Add a new course to the specified term.
@@ -164,7 +164,7 @@ paths:
   /courses/{term}/{course}:
     delete:
       security:
-        - cookieAuth: []
+        - cookieAuth: [ ]
       tags:
         - Courses
       summary: Delete a course from the specified term.
@@ -184,7 +184,7 @@ paths:
             type: string
       responses:
         "204":
-          description: Successfully deleted room.
+          description: Successfully removed course from user.
         "401":
           description: Not Authorised.
           content:
@@ -211,7 +211,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  rooms:
+                  sessions:
                     type: array
                     items:
                       $ref: "#/components/schemas/Session"
@@ -224,7 +224,7 @@ paths:
 
     post:
       security:
-        - cookieAuth: []
+        - cookieAuth: [ ]
       tags:
         - Sessions
       summary: Create a new session.
@@ -258,7 +258,7 @@ paths:
   /sessions/{sessionId}:
     patch:
       security:
-        - cookieAuth: []
+        - cookieAuth: [ ]
       tags:
         - Sessions
       summary: Update an existing session.
@@ -294,7 +294,7 @@ paths:
 
     delete:
       security:
-        - cookieAuth: []
+        - cookieAuth: [ ]
       tags:
         - Courses
       summary: Delete an existing session.
@@ -342,11 +342,11 @@ components:
         name:
           type: string
         avatarUrl:
-          type: [string, "null"]
+          type: [ string, "null" ]
         year:
-          type: [integer, "null"]
+          type: [ integer, "null" ]
         major:
-          type: [string, "null"]
+          type: [ string, "null" ]
       required:
         - id
         - name
@@ -364,9 +364,9 @@ components:
         name:
           type: string
         year:
-          type: [integer, "null"]
+          type: [ integer, "null" ]
         major:
-          type: [string, "null"]
+          type: [ string, "null" ]
       example:
         year: 1
         major: Computer Science
