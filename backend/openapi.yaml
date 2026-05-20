@@ -126,6 +126,13 @@ paths:
         - Courses
       summary: Add a new course to the specified term.
       description: Add a new course to the current Termful user's specified term.
+      parameters:
+        - name: term
+          in: path
+          description: The term to add the course to. (For example, 26T1).
+          required: true
+          schema:
+            type: string
       requestBody:
         required: true
         content:
@@ -141,8 +148,51 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "404":
+          description: Term with given name not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "422":
           description: Invalid fields provided.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /courses/{term}/{course}:
+    delete:
+      security:
+        - cookieAuth: [ ]
+      tags:
+        - Courses
+      summary: Delete a course from the specified term.
+      description: Delete an existing course from the current Termful user's specified term.
+      parameters:
+        - name: term
+          in: path
+          description: The term to remove the course from. (For example, 26T1).
+          required: true
+          schema:
+            type: string
+        - name: course
+          in: path
+          description: The course to remove from the user.
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Successfully deleted room.
+        "401":
+          description: Not Authorised.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: The user is not enrolled in the provided course for the given term.
           content:
             application/json:
               schema:
