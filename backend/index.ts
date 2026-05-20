@@ -8,6 +8,7 @@ import apiSpec from "./openapi.yaml";
 import swaggerUi from "swagger-ui-express";
 import userRouter from "./routes/users.ts";
 import courseRouter from "./routes/courses.ts";
+import sessionRouter from "./routes/sessions.ts";
 
 // Create Express application, WebSocket server and HTTP server
 const app = express();
@@ -35,6 +36,7 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(apiSpec));
 // Add routers (add similar code lines to the one below when you create more routers)
 app.use("/users", userRouter);
 app.use("/courses", courseRouter);
+app.use("/sessions", sessionRouter);
 
 // Start server
 const port = process.env.PORT || 8080;
