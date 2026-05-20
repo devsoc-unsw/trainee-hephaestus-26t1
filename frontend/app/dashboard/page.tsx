@@ -164,7 +164,7 @@ export default function Page() {
                   </button>
                 </>
               ) : (
-                /* ADD COURSE BUTTON */ 
+                /* ADD COURSE BUTTON */
                 <Button className="w-full" onClick={() => setIsAddCourse(true)}>
                   <Plus />
                   Add Course
