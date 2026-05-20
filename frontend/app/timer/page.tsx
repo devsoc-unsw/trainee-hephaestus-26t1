@@ -8,6 +8,16 @@ import { useAuth } from "@/app/providers/AuthProvider";
 import React, { useState, useEffect } from "react";
 
 type TimerMode = "focus" | "shortBreak" | "longBreak";
+const COURSES = [
+  { id: "c1", name: "COMP1511: Programming Fundamentals" },
+  { id: "c2", name: "COMP6080: Frontend Web Prog" },
+];
+
+const TASKS = [
+  { id: "t1", name: "Lecture" },
+  { id: "t2", name: "Lab" },
+  { id: "t3", name: "Assignment" },
+];
 
 export default function Page() {
   // 0. AUTH STATE
@@ -28,13 +38,29 @@ export default function Page() {
   const [initialTime, setInitialTime] = useState<number>(25 * 60);
   const [timeLeft, setTimeLeft] = useState<number>(25 * 60);
   const [isActive, setIsActive] = useState<boolean>(false);
+  // Inline Editing
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>("");
+  const [customFocusTime, setCustomFocusTime] = useState<number>(FOCUS_TIME);
+  // Mode State: focus, break
   const [mode, setMode] = useState<TimerMode>("focus");
   const [sessionsCompleted, setSessionsCompleted] = useState<number>(0);
-  const [customFocusTime, setCustomFocusTime] = useState<number>(FOCUS_TIME);
+  // Course & Tasks
+  const [isSetupComplete, setIsSetupComplete] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState("");
+  const [selectedTask, setSelectedTask] = useState("");
 
-  // 2. HELPERS: Onclicks for Start/Pause and Reset Buttons + Time formatter
+  // 2. HELPERS:
+  // Handler to move from setup (course + task selection) to timer
+  const handleStartSession = (
+    e: React.SyntheticEvent<HTMLFormElement>,
+  ): void => {
+    e.preventDefault();
+    if (!selectedCourse) return;
+    setIsSetupComplete(true);
+  };
+
+  // Onclicks for Start/Pause and Reset Buttons + Time formatter
   const toggleTimer = (): void => setIsActive(!isActive);
   const resetTimer = (): void => {
     setIsActive(false);
@@ -188,12 +214,26 @@ export default function Page() {
 
       {/* 2. MAIN */}
       <main className="flex flex-1 flex-col items-center justify-center">
-        <section className="flex flex-col items-center justify-center gap-10 text-center">
-          {/* a. Header Text & Mode Selector: Dynamically change to focus or break time */}
-          <div className="flex flex-col gap-4">
-            <h1 className="text-3xl tracking-tight sm:text-5xl">
-              {mode === "focus" ? "focus time." : "break time."}
-            </h1>
+        {isSetupComplete ? (
+          <section className="flex flex-col items-center justify-center gap-5 text-center">
+            {/* a. Header Text & Mode Selector: Dynamically change to focus or break time */}
+            <div className="flex flex-col gap-2">
+              <h1 className={`text-3xl tracking-tight sm:text-5xl`}>
+                {mode === "focus" ? "focus time." : "break time."}
+              </h1>
+
+              <h2
+                className={`cursor-pointer text-lg tracking-tight sm:text-xl ${
+                  isActive
+                    ? "pointer-events-none opacity-0 select-none"
+                    : "opacity-100"
+                }`}
+                onClick={() => setIsSetupComplete(false)}
+                title="Change course & task"
+              >
+                {selectedCourse} ({selectedTask})
+              </h2>
+            </div>
 
             {/* Mode Selectors */}
             <div
@@ -225,38 +265,37 @@ export default function Page() {
                 Long Break
               </Button>
             </div>
-          </div>
 
-          {/* b. Timer UI: Pops out when timer is on*/}
-          <div
-            className={`relative flex h-80 w-80 items-center justify-center transition-all duration-700 ease-in-out ${
-              isActive ? "scale-105" : "scale-100"
-            }`}
-          >
-            {/* i. Outer 'Breathing' Aura: Visible only when timer on*/}
-            <svg
-              className={`absolute h-full w-full overflow-visible transition-opacity duration-1000 ${
-                isActive ? "opacity-100" : "opacity-0"
+            {/* b. Timer UI: Pops out when timer is on*/}
+            <div
+              className={`relative flex h-80 w-80 items-center justify-center transition-all duration-700 ease-in-out ${
+                isActive ? "scale-105" : "scale-100"
               }`}
             >
-              <circle
-                cx={radius + 20}
-                cy={radius + 20}
-                /* Adjust overlap with (ii) Main Countdown Ring */
-                r={radius + 15}
-                stroke="currentColor"
-                strokeWidth="24" /* Thicker stroke for a wider glow */
-                fill="transparent"
-                className={`${auraColor} blur-xl ${
-                  isActive ? "animate-[pulse_5s_ease-in-out_infinite]" : ""
+              {/* i. Outer 'Breathing' Aura: Visible only when timer on*/}
+              <svg
+                className={`absolute h-full w-full overflow-visible transition-opacity duration-1000 ${
+                  isActive ? "opacity-100" : "opacity-0"
                 }`}
-              />
-            </svg>
+              >
+                <circle
+                  cx={radius + 20}
+                  cy={radius + 20}
+                  /* Adjust overlap with (ii) Main Countdown Ring */
+                  r={radius + 15}
+                  stroke="currentColor"
+                  strokeWidth="24" /* Thicker stroke for a wider glow */
+                  fill="transparent"
+                  className={`${auraColor} blur-xl ${
+                    isActive ? "animate-[pulse_5s_ease-in-out_infinite]" : ""
+                  }`}
+                />
+              </svg>
 
-            {/* ii. Inner Main Countdown Rings */}
-            <svg className="absolute h-full w-full -rotate-90 transform overflow-visible">
-              {/* [Optional] Faint Background Track */}
-              {/* <circle
+              {/* ii. Inner Main Countdown Rings */}
+              <svg className="absolute h-full w-full -rotate-90 transform overflow-visible">
+                {/* [Optional] Faint Background Track */}
+                {/* <circle
                 cx={radius + 20}
                 cy={radius + 20}
                 r={radius}
@@ -265,61 +304,117 @@ export default function Page() {
                 fill="transparent"
                 className="text-white/5"
               /> */}
-              {/* Active 'Draining' Ring */}
-              <circle
-                cx={radius + 20}
-                cy={radius + 20}
-                r={radius}
-                stroke="currentColor"
-                strokeWidth="6"
-                fill="transparent"
-                strokeLinecap="round"
-                strokeDasharray={circumference}
-                strokeDashoffset={strokeDashoffset}
-                className={`${ringColor} transition-all duration-1000 ease-linear`}
-              />
-            </svg>
-
-            {/* iii. Interactive Timer Text with Inline Editing  */}
-            <div className="z-10">
-              {isEditing ? (
-                <input
-                  type="text"
-                  value={inputValue}
-                  onChange={handleInputChange}
-                  onBlur={handleInputSubmit}
-                  onKeyDown={handleKeyDown}
-                  autoFocus
-                  className="w-64 bg-transparent text-center text-7xl font-light tracking-tight tabular-nums outline-none focus:ring-0"
+                {/* Active 'Draining' Ring */}
+                <circle
+                  cx={radius + 20}
+                  cy={radius + 20}
+                  r={radius}
+                  stroke="currentColor"
+                  strokeWidth="6"
+                  fill="transparent"
+                  strokeLinecap="round"
+                  strokeDasharray={circumference}
+                  strokeDashoffset={strokeDashoffset}
+                  className={`${ringColor} transition-all duration-1000 ease-linear`}
                 />
-              ) : (
-                <div
-                  onClick={handleTimerClick}
-                  className="cursor-pointer text-7xl font-light tracking-tight tabular-nums transition-all hover:text-zinc-300"
-                  title="Click to edit time"
-                >
-                  {formatTime(timeLeft)}
-                </div>
-              )}
-            </div>
-          </div>
+              </svg>
 
-          {/* c. Action Buttons */}
-          {/* Start/Pause & Reset Buttons */}
-          <div className="mt-4 flex gap-4">
-            <Button size="lg" className="w-40 text-lg" onClick={toggleTimer}>
-              {isActive ? "Pause" : "Start"}
-            </Button>
-            <Button
-              size="lg"
-              variant="secondary"
-              className="w-34 text-lg"
-              onClick={resetTimer}
-            >
-              Reset
-            </Button>
-          </div>
-        </section>
+              {/* iii. Interactive Timer Text with Inline Editing  */}
+              <div className="z-10">
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={inputValue}
+                    onChange={handleInputChange}
+                    onBlur={handleInputSubmit}
+                    onKeyDown={handleKeyDown}
+                    autoFocus
+                    className="w-64 bg-transparent text-center text-7xl font-light tracking-tight tabular-nums outline-none focus:ring-0"
+                  />
+                ) : (
+                  <div
+                    onClick={handleTimerClick}
+                    className="cursor-pointer text-7xl font-light tracking-tight tabular-nums transition-all hover:text-zinc-300"
+                    title="Click to edit time"
+                  >
+                    {formatTime(timeLeft)}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* c. Action Buttons */}
+            {/* Start/Pause & Reset Buttons */}
+            <div className="mt-4 flex gap-4">
+              <Button size="lg" className="w-40 text-lg" onClick={toggleTimer}>
+                {isActive ? "Pause" : "Start"}
+              </Button>
+              <Button
+                size="lg"
+                variant="secondary"
+                className="w-34 text-lg"
+                onClick={resetTimer}
+              >
+                Reset
+              </Button>
+            </div>
+          </section>
+        ) : (
+          /* SELECT COURSE + TASK FORM */
+          <section className="w-full max-w-md rounded-2xl border border-white/10 bg-zinc-900/50 p-8 shadow-xl backdrop-blur-md">
+            <h2 className="mb-6 text-center text-2xl font-semibold">
+              What are you focusing on?
+            </h2>
+
+            <form onSubmit={handleStartSession} className="flex flex-col gap-6">
+              <div className="flex flex-col gap-2">
+                <label className="text-sm text-zinc-200">
+                  Course (Required)
+                </label>
+                <select
+                  value={selectedCourse}
+                  onChange={(e) => setSelectedCourse(e.target.value)}
+                  required
+                  className="w-full rounded-xl border border-white/10 bg-purple-100 p-3 text-zinc-950 transition-all focus:ring-2 focus:ring-purple-500/50 focus:outline-none"
+                >
+                  <option value="" disabled>
+                    Select a course
+                  </option>
+                  {COURSES.map((course) => (
+                    <option key={course.id} value={course.name}>
+                      {course.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="text-sm text-zinc-200">Task</label>
+                <select
+                  value={selectedTask}
+                  onChange={(e) => setSelectedTask(e.target.value)}
+                  className="w-full rounded-xl border border-white/10 bg-purple-100 p-3 text-zinc-950 transition-all focus:ring-2 focus:ring-purple-500/50 focus:outline-none"
+                >
+                  <option value="">No specific task</option>
+                  {TASKS.map((task) => (
+                    <option key={task.id} value={task.name}>
+                      {task.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <Button
+                type="submit"
+                size="lg"
+                className="mt-2 w-full"
+                disabled={!selectedCourse}
+              >
+                Enter Focus Mode
+              </Button>
+            </form>
+          </section>
+        )}
       </main>
     </div>
   );
