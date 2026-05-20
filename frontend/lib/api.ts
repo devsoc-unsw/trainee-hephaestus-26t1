@@ -1,6 +1,6 @@
 import axios from "axios";
 import { backendUrl } from "@/lib/utils";
-import { UserProfile } from "@/lib/types";
+import { UserPatch, UserProfile } from "@/lib/types";
 
 /**
  * Make a GET request to the backend and return the JSON response.
@@ -61,4 +61,14 @@ async function deleteAuthed<T>(path: string): Promise<T> {
  */
 export async function getUser(userId: string): Promise<UserProfile> {
   return await get<UserProfile>(`/users/${userId}`);
+}
+
+/**
+ * Modify a user with a given ID.
+ */
+export async function updateUser(
+  userId: string,
+  body: UserPatch,
+): Promise<void> {
+  await patchAuthed<void>(`/users/${userId}`, body);
 }
