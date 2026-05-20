@@ -2,68 +2,177 @@
 import { Button } from "@/components/ui/button"
 import Link from "next/link";
 import CourseIcon from "@/components/ui/course-icon";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 import TreeIcon from "@/components/ui/tree-icon";
 import { CourseDropdownMenu } from "@/components/ui/dropdown-menu";
-import { useState } from "react";
+import { Plus, Trash, X, CornerDownLeft } from "lucide-react";
+import { useEffect, useState } from "react";
 
-interface sessionInterface {
-  id: string, 
-  course: string, 
-  task: string,
-  term: string, 
-  week: number, 
-  sessionTime: string, 
-  duration: number
-}
+type Course = {
+  id: number;
+  code: string;
+};
+type CourseWithColor = Course & {
+  color: string;
+};
 
 export default function Page() {
-
   const colour1 = "#1d2cff";
-  const colour2 = "#ff9dcb"; 
-  const colour3 = "#28cdff"; 
+  const colour2 = "#ff9dcb";
+  const colour3 = "#28cdff";
+  const courseColors = ["#1d2cff", "#ff9dcb", "#28cdff"];
 
-  const [currTerm, setCurrTerm] = useState<string>("26T1"); 
-  // const sessions = getSessions(); 
+  const assignColors = (courses: Course[]) => {
+    return courses.map((course, index) => ({
+      ...course,
+      color: courseColors[index % courseColors.length],
+    }));
+  };
+  const [courses, setCourses] = useState<CourseWithColor[]>([]);
+  useEffect(() => {
+    async function loadCourses() {
+      const data = [
+        { id: 1, code: "COMP1511" },
+        { id: 2, code: "COMP1521" },
+      ];
+      const coloredCourses = assignColors(data);
+      setCourses(coloredCourses);
+    }
+    loadCourses();
+  }, []);
 
-  // // per term -> week -> course -> sum duration 
-  // const currTermSessions = sessions.rooms.filter((session: sessionInterface) => {session.term === currTerm})
-  // const week = 1; 
+  const [isAddCourse, setIsAddCourse] = useState(false);
+  const [newCourse, setNewCourse] = useState("");
+  const courseLength = courses.length;
+  const getAvailableColor = () => {
+    const usedColors = courses.map((course) => course.color);
 
+    return courseColors.find((color) => !usedColors.includes(color));
+  };
+  
+  /**
+   * Add New Course
+   */
+  const addCourse = () => {
+    const formatted = newCourse.trim().toUpperCase();
+    if (!formatted) return;
+    const duplicate = courses.some((course) => course.code === formatted);
+    if (duplicate) return;
+
+    const availableColor = getAvailableColor();
+    if (!availableColor) return;
+    const newItem: CourseWithColor = {
+      id: Date.now(), // current id
+      code: formatted,
+      color: availableColor,
+    };
+    setCourses([...courses, newItem]);
+
+    setNewCourse("");
+    setIsAddCourse(false);
+  };
+
+  /**
+   * Remove Course
+   */
+  const removeCourse = (id: number) => {
+    setCourses(courses.filter((course) => course.id !== id));
+  };
 
   return (
-    <div className="flex min-h-svh flex-col gap-6 md:p-10 bg-zinc-950 bg-[radial-gradient(circle_at_20%_80%,oklch(0.55_0.15_240/0.35),transparent_70%),radial-gradient(circle_at_50%_30%,oklch(0.50_0.25_300/0.4),transparent_80%),radial-gradient(circle_at_80%_20%,oklch(0.40_0.12_260/0.25),transparent_70%)] ">
-
+    <div className="flex min-h-svh flex-col gap-6 bg-zinc-950 bg-[radial-gradient(circle_at_20%_80%,oklch(0.55_0.15_240/0.35),transparent_70%),radial-gradient(circle_at_50%_30%,oklch(0.50_0.25_300/0.4),transparent_80%),radial-gradient(circle_at_80%_20%,oklch(0.40_0.12_260/0.25),transparent_70%)] md:p-10">
       {/* NAVBAR */}
       <div className='flex w-full justify-between flex-row text-white items-center'>
         <h1 className="text-xl font-extrabold tracking-tight">termful.</h1>
 
-        <div className="flex items-center gap-6">
+        {/* <div className="flex items-center gap-6">
           <CourseDropdownMenu currTerm={currTerm} setCurrTerm={setCurrTerm}></CourseDropdownMenu>
           <Button asChild>
             <Link href="/profile">User Profile</Link>
           </Button>
-        </div>
+        </div> */}
       </div>
-      <hr className="w-full border-white/40"/>
+      <hr className="w-full border-white/40" />
 
       {/* CONTENT */}
-      <div className='flex flex-row justify-center items-center gap-40'>
+      <div className="flex flex-row items-center justify-center gap-40">
         {/* COURSE LEGEND */}
-        <div className="flex flex-col rounded-md border-3 border-white items-left justify-center p-4 pr-10 shadow-xl/80 shadow-cyan-500/50">
-          <div className="flex flex-row items-center">
-            <CourseIcon colour={colour1}></CourseIcon>
-            <h3 className="text-white">course 1</h3>
-          </div>
+        <div className="items-left relative flex h-auto w-70 flex-col justify-center rounded-md border-3 border-white p-4 shadow-xl/80 shadow-cyan-500/50">
+          {courses.map((course, index) => (
+            <div key={index} className="flex items-center gap-2">
+              {/* ICON */}
+              <div className="flex w-15 justify-center">
+                <CourseIcon colour={course.color} />
+              </div>
 
-          <div className="flex flex-row items-center">
-            <CourseIcon colour={colour2}></CourseIcon>
-            <h3 className="text-white">course 2</h3>
-          </div>
+              {/* COURSE NAME */}
+              <div className="min-w-0 flex-1">
+                <span className="break-all text-white">{course.code}</span>
+              </div>
 
-          <div className="flex flex-row items-center">
-            <CourseIcon colour={colour3}></CourseIcon>
-            <h3 className="text-white">course 3</h3>
-          </div>
+              {/* ACTION */}
+              <div className="flex w-8 justify-center">
+                <button
+                  className="flex-end flex rounded-full border border-purple-500/20 bg-purple-500/10 p-2 transition-transform duration-200 hover:scale-110"
+                  onClick={() => removeCourse(course.id)}
+                >
+                  <Trash className="h-3 w-3 text-purple-300" />
+                </button>
+              </div>
+            </div>
+          ))}
+
+          {courseLength < 3 && (
+            <div className="flex items-center gap-2">
+              {isAddCourse ? (
+                <>
+                  {/* INPUT AREA */}
+                  <div className="flex-1">
+                    <InputGroup className="bg-white">
+                      <InputGroupInput
+                        placeholder="Enter course..."
+                        className="h-8 w-10 px-2 py-1 text-sm"
+                        value={newCourse}
+                        onChange={(e) => {
+                          setNewCourse(e.target.value);
+                        }}
+                      />
+                      <InputGroupAddon align="inline-end">
+                        <InputGroupButton
+                          variant="secondary"
+                          className="text-sm"
+                          onClick={addCourse}
+                        >
+                          <CornerDownLeft />
+                        </InputGroupButton>
+                      </InputGroupAddon>
+                    </InputGroup>
+                  </div>
+
+                  {/* CANCEL BUTTON */}
+                  <button
+                    className="flex h-8 w-8 items-center justify-center rounded-full border border-purple-500/20 bg-purple-500/10 transition-transform duration-200 hover:scale-110"
+                    onClick={() => {
+                      setIsAddCourse(false);
+                    }}
+                  >
+                    <X className="h-3 w-3 text-purple-300" />
+                  </button>
+                </>
+              ) : (
+                /* ADD COURSE BUTTON */
+                <Button className="w-full" onClick={() => setIsAddCourse(true)}>
+                  <Plus />
+                  Add Course
+                </Button>
+              )}
+            </div>
+          )}
         </div>
 
         {/* TREE */}
@@ -218,7 +327,6 @@ export default function Page() {
                   <div className="w-8 h-8"><TreeIcon hours="4" colour={colour1} /></div>
                 </div>
               </foreignObject>
-
             </svg>
           </div>
 
@@ -246,9 +354,7 @@ export default function Page() {
             <h3> 4-6 hours </h3>
           </div>
         </div>
-        
       </div>
-
     </div>
-  )
+  );
 }
