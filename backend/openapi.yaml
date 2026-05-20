@@ -33,6 +33,27 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+    patch:
+      security:
+        - cookieAuth: [ ]
+      tags:
+        - Users
+      summary: Modify a user with a given ID.
+      description: Modify a Termful user's profile using their ID.
+      parameters:
+        - name: userId
+          in: path
+          description: The user's ID.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserPatch"
+
 components:
   securitySchemes:
     cookieAuth:
@@ -50,43 +71,38 @@ components:
       properties:
         id:
           type: string
-        username:
-          type: string
-        displayName:
+        name:
           type: string
         avatarUrl:
-          type: [string, "null"]
+          type: [ string, "null" ]
+        year:
+          type: [ integer, "null" ]
+        major:
+          type: [ string, "null" ]
       required:
         - id
-        - username
-        - displayName
+        - name
         - avatarUrl
+        - year
+        - major
       example:
         id: "12345676543245"
         username: horizell
         displayName: Horizell
 
-    NullableUser:
-      type: [object, "null"]
+    UserPatch:
+      type: object
       properties:
-        id:
+        name:
           type: string
-        username:
-          type: string
-        displayName:
-          type: string
-        avatarUrl:
-          type: [string, "null"]
-      required:
-        - id
-        - username
-        - displayName
-        - avatarUrl
+        year:
+          type: [ integer, "null" ]
+        major:
+          type: [ string, "null" ]
       example:
-        id: "12345676543245"
-        username: horizell
-        displayName: Horizell
-
+        year: 1
+        major: Computer Science
+    
     Error:
       type: object
       properties:
