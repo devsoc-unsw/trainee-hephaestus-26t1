@@ -83,6 +83,8 @@ paths:
 
   /courses/{term}:
     get:
+      security:
+        - cookieAuth: [ ]
       tags:
         - Courses
       summary: Get the courses for a user's term.
@@ -303,7 +305,7 @@ paths:
       security:
         - cookieAuth: [ ]
       tags:
-        - Courses
+        - Sessions
       summary: Delete an existing session.
       description: Delete an existing session from the current Termful user's sessions.
       parameters:

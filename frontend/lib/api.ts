@@ -72,3 +72,32 @@ export async function updateUser(
 ): Promise<void> {
   await patchAuthed<void>(`/users/${userId}`, body);
 }
+
+/**
+ * Get the logged-in user's courses for a specific term.
+ */
+export async function getCourses(term: string): Promise<string[]> {
+  return (await getAuthed<{ rooms: string[] }>(`/courses/${term}`)).rooms;
+}
+
+/**
+ * Add a new course to a specific term for the logged-in user.
+ */
+export async function addCourse(
+  term: string,
+  courseName: string,
+): Promise<void> {
+  await postAuthed<void>(`/courses/${term}`, { name: courseName });
+}
+
+/**
+ * Delete a course from the specified term for the logged-in user.
+ */
+export async function deleteCourse(
+  term: string,
+  courseName: string,
+): Promise<void> {
+  await deleteAuthed<void>(
+    `/courses/${term}/${encodeURIComponent(courseName)}`,
+  );
+}
