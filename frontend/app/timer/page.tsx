@@ -22,12 +22,10 @@ const TASKS = [
 export default function Page() {
   // 0. AUTH STATE
   const { session } = useAuth();
-  const params = useSearchParams();
-  const callbackUrl = params.get("callbackUrl") ?? "/";
 
-  // If user is logged in, redirect to dashboard page
-  if (session !== null) {
-    redirect("/dashboard");
+  // If user is not logged in, redirect to sign-in page
+  if (session === null) {
+    redirect("/signin");
   }
 
   // 1. TIMER + BUTTON STATE
