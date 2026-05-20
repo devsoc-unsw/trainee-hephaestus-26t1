@@ -87,7 +87,7 @@ export async function createSession(
   week: number,
   sessionTime: string,
   duration: number,
-): Promise<void> {
+): Promise<Session> {
   // Generate session ID
   const sessionId = generator.generate();
 
@@ -115,6 +115,11 @@ export async function createSession(
   // Check if insertion was successful
   if (results.rows.length !== 1) {
     throw new Error("Could not create session.");
+  } else {
+    return {
+      ...results.rows[0],
+      session_time: (results.rows[0].session_time as Date).toISOString(),
+    };
   }
 }
 
