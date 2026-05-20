@@ -203,6 +203,13 @@ paths:
         - Sessions
       summary: Get the sessions for a given user.
       description: Fetch a Termful user's sessions.
+      parameters:
+        - name: term
+          in: query
+          description: Get the sessions for a provided term.
+          required: false
+          schema:
+            type: string
       responses:
         "200":
           description: Successful operation.
