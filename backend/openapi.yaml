@@ -250,7 +250,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SessionId"
+                $ref: "#/components/schemas/Session"
         "401":
           description: Not Authorised.
           content:
@@ -438,16 +438,6 @@ components:
       example:
         course: "COMP6991 - Rust :D"
         duration: 3000
-
-    SessionId:
-      type: object
-      properties:
-        id:
-          type: string
-      required:
-        - id
-      example:
-        id: "12345678765432"
 
     Session:
       type: object
