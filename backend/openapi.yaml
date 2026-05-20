@@ -33,6 +33,295 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+    patch:
+      security:
+        - cookieAuth: []
+      tags:
+        - Users
+      summary: Modify a user with a given ID.
+      description: Modify a Termful user's profile using their ID.
+      parameters:
+        - name: userId
+          in: path
+          description: The user's ID.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserPatch"
+      responses:
+        "204":
+          description: Successfully updated room.
+        "401":
+          description: Not Authorised.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: User does not have the permission to edit this user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: User with given ID not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Invalid fields provided.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /courses/{term}:
+    get:
+      tags:
+        - Courses
+      summary: Get the courses for a user's term.
+      description: Fetch a Termful user's courses for a given term.
+      parameters:
+        - name: term
+          in: path
+          description: The term to fetch the courses the user is enrolled in.
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rooms:
+                    type: array
+                    items:
+                      type: string
+        "401":
+          description: Not Authorised.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Term with given name not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    post:
+      security:
+        - cookieAuth: []
+      tags:
+        - Courses
+      summary: Add a new course to the specified term.
+      description: Add a new course to the current Termful user's specified term.
+      parameters:
+        - name: term
+          in: path
+          description: The term to add the course to. (For example, 26T1).
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CourseCreate"
+      responses:
+        "201":
+          description: Successfully added course.
+        "401":
+          description: Not Authorised.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Term with given name not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Invalid fields provided.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /courses/{term}/{course}:
+    delete:
+      security:
+        - cookieAuth: []
+      tags:
+        - Courses
+      summary: Delete a course from the specified term.
+      description: Delete an existing course from the current Termful user's specified term.
+      parameters:
+        - name: term
+          in: path
+          description: The term to remove the course from. (For example, 26T1).
+          required: true
+          schema:
+            type: string
+        - name: course
+          in: path
+          description: The course to remove from the user.
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Successfully deleted room.
+        "401":
+          description: Not Authorised.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: The user is not enrolled in the provided course for the given term.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /sessions:
+    get:
+      tags:
+        - Sessions
+      summary: Get the sessions for a given user.
+      description: Fetch a Termful user's sessions.
+      responses:
+        "200":
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rooms:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Session"
+        "401":
+          description: Not Authorised.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    post:
+      security:
+        - cookieAuth: []
+      tags:
+        - Sessions
+      summary: Create a new session.
+      description: Create a new session as the current Termful user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SessionCreate"
+      responses:
+        "201":
+          description: Successfully created session.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SessionId"
+        "401":
+          description: Not Authorised.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Invalid fields provided.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /sessions/{sessionId}:
+    patch:
+      security:
+        - cookieAuth: []
+      tags:
+        - Sessions
+      summary: Update an existing session.
+      description: Update an existing session for the current Termful user.
+      parameters:
+        - name: sessionId
+          in: path
+          description: The ID of the session to modify.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SessionPatch"
+      responses:
+        "201":
+          description: Successfully updated session.
+        "401":
+          description: Not Authorised.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Invalid fields provided.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    delete:
+      security:
+        - cookieAuth: []
+      tags:
+        - Courses
+      summary: Delete an existing session.
+      description: Delete an existing session from the current Termful user's sessions.
+      parameters:
+        - name: sessionId
+          in: path
+          description: The ID of the session to delete.
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Successfully deleted session.
+        "401":
+          description: Not Authorised.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Couldn't find session with the provided ID for the user.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
 components:
   securitySchemes:
     cookieAuth:
@@ -50,42 +339,45 @@ components:
       properties:
         id:
           type: string
-        username:
-          type: string
-        displayName:
+        name:
           type: string
         avatarUrl:
           type: [string, "null"]
+        year:
+          type: [integer, "null"]
+        major:
+          type: [string, "null"]
       required:
         - id
-        - username
-        - displayName
+        - name
         - avatarUrl
+        - year
+        - major
       example:
         id: "12345676543245"
         username: horizell
         displayName: Horizell
 
-    NullableUser:
-      type: [object, "null"]
+    UserPatch:
+      type: object
       properties:
-        id:
+        name:
           type: string
-        username:
-          type: string
-        displayName:
-          type: string
-        avatarUrl:
+        year:
+          type: [integer, "null"]
+        major:
           type: [string, "null"]
-      required:
-        - id
-        - username
-        - displayName
-        - avatarUrl
       example:
-        id: "12345676543245"
-        username: horizell
-        displayName: Horizell
+        year: 1
+        major: Computer Science
+
+    CourseCreate:
+      type: object
+      properties:
+        name:
+          type: string
+      example:
+        name: COMP6080 - Front End Web Development
 
     Error:
       type: object
@@ -99,6 +391,94 @@ components:
         code: 404
         message: User not found.
 
+    SessionCreate:
+      type: object
+      properties:
+        course:
+          type: string
+        task:
+          type: string
+        session_time:
+          type: string
+          format: date-time
+        duration:
+          type: integer
+      required:
+        - course
+        - task
+        - session_time
+        - duration
+      example:
+        course: "COMP6080 - Front End Web Development"
+        task: "Assignment"
+        session_time: 2026-04-29T05:06:10+00:00
+        duration: 1500
+
+    SessionPatch:
+      type: object
+      properties:
+        course:
+          type: string
+        task:
+          type: string
+        session_time:
+          type: string
+          format: date-time
+        duration:
+          type: integer
+      example:
+        course: "COMP6991 - Rust :D"
+        duration: 3000
+
+    SessionId:
+      type: object
+      properties:
+        id:
+          type: string
+      required:
+        - id
+      example:
+        id: "12345678765432"
+
+    Session:
+      type: object
+      properties:
+        id:
+          type: string
+        course:
+          type: string
+        task:
+          type: string
+        term:
+          type: string
+        week:
+          type: integer
+        session_time:
+          type: string
+          format: date-time
+        duration:
+          type: integer
+      required:
+        - id
+        - course
+        - task
+        - term
+        - week
+        - session_time
+        - duration
+      example:
+        id: "12345676543245"
+        course: "COMP6080 - Front End Web Development"
+        task: "Assignment"
+        term: "26T1"
+        week: 8
+        session_time: 2026-04-29T05:06:10+00:00
+        duration: 1500
+
 tags:
   - name: Users
     description: Routes relating to Termful users.
+  - name: Courses
+    description: Routes relating to Termful courses.
+  - name: Sessions
+    description: Routes relating to Termful sessions.
