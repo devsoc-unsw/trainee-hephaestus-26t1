@@ -67,6 +67,8 @@ export default function Page() {
   // Fetching Course
   const [courses, setCourses] = useState<string[]>([]);
   const [isLoadingCourses, setIsLoadingCourses] = useState<boolean>(true);
+  // Completion Animations
+  const [isAnimating, setIsAnimating] = useState(false);
 
   // Fetch courses from backend when the page loads
   useEffect(() => {
@@ -175,8 +177,12 @@ export default function Page() {
 
   // Handle timer hitting zero, log a session to the backend, update local state and go to break
   const handleSessionComplete = async (): Promise<void> => {
+    // Trigger completion animation of header
+    setIsAnimating(true);
+    setTimeout(() => setIsAnimating(false), 2000);
+
+    // a. Fire completed session to the backend
     if (mode === "focus") {
-      // a. Fire completed session to the backend
       try {
         await createSession({
           course: selectedCourse,
@@ -268,7 +274,9 @@ export default function Page() {
           <section className="flex flex-col items-center justify-center gap-5 text-center">
             {/* a. Header Text & Mode Selector: Dynamically change to focus or break time */}
             <div className="flex flex-col gap-2">
-              <h1 className={`text-3xl tracking-tight sm:text-5xl`}>
+              <h1
+                className={`text-3xl tracking-tight transition-all duration-700 ease-out sm:text-5xl ${isAnimating ? "scale-120 text-emerald-400" : "scale-100"}`}
+              >
                 {mode === "focus" ? "focus time." : "break time."}
               </h1>
 
@@ -373,7 +381,7 @@ export default function Page() {
               </svg>
 
               {/* iii. Interactive Timer Text with Inline Editing  */}
-              <div className="z-10">
+              <div className="relative z-10 flex flex-col items-center justify-center">
                 {isEditing ? (
                   <input
                     type="text"
@@ -393,6 +401,20 @@ export default function Page() {
                     {formatTime(timeLeft)}
                   </div>
                 )}
+                {/* Session progress dots below timer*/}
+                <div className="absolute -bottom-15 flex gap-3">
+                  {[0, 1, 2, 3].map((step) => (
+                    <div
+                      key={step}
+                      className={`h-2.5 w-2.5 rounded-full transition-colors duration-500 ${
+                        step < sessionsCompleted % 4
+                          ? "bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.6)]"
+                          : "bg-white/10"
+                      }`}
+                      title={`Session ${step + 1} of 4`}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
 
