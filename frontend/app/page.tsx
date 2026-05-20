@@ -17,7 +17,7 @@ export default function Home() {
       {/* 1. NAV BAR */}
       <header className="flex items-center justify-between border-b border-white/10 bg-black/10 px-6 py-2 backdrop-blur-md">
         {/* a. Left: Logo */}
-        <div className="text-xl font-extrabold tracking-tight">Termful.</div>
+        <div className="text-xl font-extrabold tracking-tight">termful.</div>
 
         {/* b. Right - Action Buttons */}
         <div className="flex gap-3">
@@ -36,7 +36,7 @@ export default function Home() {
         {/* a. Top: Hero Section */}
         <section className="flex flex-col items-center justify-center gap-6 px-4 pt-32 pb-24 text-center">
           <h1 className="text-4xl tracking-tight sm:text-6xl">
-            Focus Deeply. Log effortlessly.
+            focus deeply. log effortlessly.
           </h1>
           <p className="text-md mb-4 max-w-xl leading-relaxed sm:text-lg">
             A sleek and lightweight study tracker that pairs deep focus timers
@@ -51,7 +51,6 @@ export default function Home() {
 
         {/* b. Bottom: Feature Cards Section */}
         <section className="mx-auto max-w-6xl">
-          <h2 className="mb-6 text-3xl">Work Mindfully.</h2>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {/* Card 1: Timer*/}
             <Card className="border-white/10 bg-black/20 shadow-2xl shadow-purple-950/10 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-purple-500/30 hover:bg-black/30">
@@ -64,8 +63,8 @@ export default function Home() {
                   Customisable Timers
                 </CardTitle>
                 <CardDescription className="text-zinc-400">
-                  Timer or stopwatch? Pick the right mode for the study session
-                  so you can lock in.
+                  Pomodoro or something else? Pick the time length to suit your
+                  session so you can lock in.
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -81,8 +80,8 @@ export default function Home() {
                   Automated Logging
                 </CardTitle>
                 <CardDescription className="text-zinc-400">
-                  Your focus sessions are instantly logged by type, subject,
-                  week and term
+                  Your focus sessions are instantly logged by course, type, week
+                  and term
                 </CardDescription>
               </CardHeader>
             </Card>
