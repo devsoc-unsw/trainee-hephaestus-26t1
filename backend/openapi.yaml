@@ -55,7 +55,7 @@ paths:
               $ref: "#/components/schemas/UserPatch"
       responses:
         "204":
-          description: Successfully updated room.
+          description: Successfully updated user.
         "401":
           description: Not Authorised.
           content:
@@ -83,6 +83,8 @@ paths:
 
   /courses/{term}:
     get:
+      security:
+        - cookieAuth: []
       tags:
         - Courses
       summary: Get the courses for a user's term.
@@ -102,7 +104,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  rooms:
+                  courses:
                     type: array
                     items:
                       type: string
@@ -154,6 +156,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "409":
+          description: Course with given name already exists.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "422":
           description: Invalid fields provided.
           content:
@@ -184,7 +192,7 @@ paths:
             type: string
       responses:
         "204":
-          description: Successfully deleted room.
+          description: Successfully removed course from user.
         "401":
           description: Not Authorised.
           content:
@@ -203,6 +211,13 @@ paths:
         - Sessions
       summary: Get the sessions for a given user.
       description: Fetch a Termful user's sessions.
+      parameters:
+        - name: term
+          in: query
+          description: Get the sessions for a provided term.
+          required: false
+          schema:
+            type: string
       responses:
         "200":
           description: Successful operation.
@@ -211,7 +226,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  rooms:
+                  sessions:
                     type: array
                     items:
                       $ref: "#/components/schemas/Session"
@@ -241,7 +256,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SessionId"
+                $ref: "#/components/schemas/Session"
         "401":
           description: Not Authorised.
           content:
@@ -296,7 +311,7 @@ paths:
       security:
         - cookieAuth: []
       tags:
-        - Courses
+        - Sessions
       summary: Delete an existing session.
       description: Delete an existing session from the current Termful user's sessions.
       parameters:
@@ -429,16 +444,6 @@ components:
       example:
         course: "COMP6991 - Rust :D"
         duration: 3000
-
-    SessionId:
-      type: object
-      properties:
-        id:
-          type: string
-      required:
-        - id
-      example:
-        id: "12345678765432"
 
     Session:
       type: object
