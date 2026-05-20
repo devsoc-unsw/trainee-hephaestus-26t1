@@ -9,7 +9,7 @@ export default function Page() {
   const [editing, setEditing] = useState(false);
   const defaultYear = "Not Set";
   const defaultMajor = "Not Set";
-  
+
   /* Example user details */
   const [profile, setProfile] = useState({
     name: "Khai",
