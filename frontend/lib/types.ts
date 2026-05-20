@@ -12,6 +12,15 @@ export type UserProfile = {
 };
 
 /**
+ * A type representing a partial user profile (only has id, name and avatarUrl).
+ */
+export type PartialUserProfile = {
+  id: string;
+  name: string;
+  avatarUrl: string | null;
+};
+
+/**
  * A type representing the body of a patch user request.
  */
 export type UserPatch = {
