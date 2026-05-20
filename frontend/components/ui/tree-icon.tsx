@@ -56,7 +56,7 @@ function TreeIcon({hours, colour}:{hours: string, colour: string}) {
         </defs>
       </svg>
     );
-  } else if (hours === "4") {
+  } else if (hours === "2") {
     return (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -116,32 +116,7 @@ function TreeIcon({hours, colour}:{hours: string, colour: string}) {
     );
   }
 
-  else if (hours === '2') { return (
-    <svg xmlns="http://www.w3.org/2000/svg" 
-      viewBox="0 0 46 48"   
-      className="w-full h-full animate-pulse" 
-      fill={colour}
-    >
-      <g filter="url(#filter0_d_63_13)">
-        <path d="M21.9065 10.6821C22.2115 9.77264 23.4978 9.77264 23.8027 10.6821L26.6252 19.0987C26.7177 19.3746 26.9259 19.5966 27.1953 19.7066L35.0872 22.929C35.9165 23.2676 35.9165 24.4419 35.0872 24.7806L27.1953 28.0029C26.9259 28.113 26.7177 28.3349 26.6252 28.6108L23.8027 37.0275C23.4978 37.9369 22.2115 37.9369 21.9065 37.0275L19.084 28.6108C18.9915 28.3349 18.7834 28.113 18.5139 28.0029L10.622 24.7806C9.79268 24.4419 9.79268 23.2676 10.622 22.929L18.5139 19.7066C18.7834 19.5966 18.9915 19.3747 19.084 19.0987L21.9065 10.6821Z" fill="#ECECEC"/>
-        <path d="M22.0958 10.7454C22.3399 10.018 23.3694 10.018 23.6134 10.7454L26.4357 19.1624C26.5467 19.4933 26.7961 19.7598 27.1193 19.8919L35.0118 23.1145C35.6749 23.3856 35.6749 24.324 35.0118 24.595L27.1193 27.8177C26.7961 27.9497 26.5467 28.2162 26.4357 28.5471L23.6134 36.9641C23.3694 37.6915 22.3399 37.6915 22.0958 36.9641L19.2736 28.5471C19.1625 28.2162 18.9131 27.9497 18.59 27.8177L10.6974 24.595C10.0344 24.324 10.0344 23.3856 10.6974 23.1145L18.59 19.8919C18.9131 19.7598 19.1625 19.4933 19.2736 19.1624L22.0958 10.7454Z" stroke="white" strokeWidth="0.4"/>
-      </g>
-      <defs>
-        <filter id="filter0_d_63_13" x="0" y="0" width="45.7092" height="47.7095" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
-          <feFlood floodOpacity="0" result="BackgroundImageFix"/>
-          <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-          <feOffset/>
-          <feGaussianBlur stdDeviation="5"/>
-          <feComposite in2="hardAlpha" operator="out"/>
-          <feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.6 0"/>
-          <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_63_13"/>
-          <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_63_13" result="shape"/>
-        </filter>
-      </defs>
-    </svg>
-  )}
-
-  return (
+  else if (hours === '4') return (
     <svg xmlns="http://www.w3.org/2000/svg" 
      viewBox="0 0 65 67" 
      fill={colour}

@@ -12,12 +12,15 @@ import TreeIcon from "@/components/ui/tree-icon";
 import { CourseDropdownMenu } from "@/components/ui/dropdown-menu";
 import { Plus, Trash, X, CornerDownLeft } from "lucide-react";
 import { useEffect, useState } from "react";
+import { getCourses, getSessions } from "@/lib/api";
+import { Session } from "@/lib/types";
+import WeekBranch from "@/components/ui/week-branch";
 
 type Course = {
   id: number;
   code: string;
 };
-type CourseWithColor = Course & {
+export type CourseWithColor = Course & {
   color: string;
 };
 
@@ -25,6 +28,10 @@ export default function Page() {
   const colour1 = "#1d2cff";
   const colour2 = "#ff9dcb";
   const colour3 = "#28cdff";
+
+  const [term, setTerm] = useState("26T1"); 
+
+  // COURSES 
   const courseColors = ["#1d2cff", "#ff9dcb", "#28cdff"];
 
   const assignColors = (courses: Course[]) => {
@@ -34,13 +41,15 @@ export default function Page() {
     }));
   };
   const [courses, setCourses] = useState<CourseWithColor[]>([]);
+
   useEffect(() => {
     async function loadCourses() {
-      const data = [
-        { id: 1, code: "COMP1511" },
-        { id: 2, code: "COMP1521" },
-      ];
-      const coloredCourses = assignColors(data);
+      const data = await getCourses(term); 
+      const courses = data.map((code, index) => ({
+        id: index + 1, 
+        code
+      }))
+      const coloredCourses = assignColors(courses);
       setCourses(coloredCourses);
     }
     loadCourses();
@@ -84,18 +93,32 @@ export default function Page() {
     setCourses(courses.filter((course) => course.id !== id));
   };
 
+
+  // SESSIONS 
+  const [sessions, setSessions] = useState<Session[]>([]); 
+
+  useEffect(() => {
+    async function loadSessions() {
+      const data = await getSessions(term); 
+      setSessions(data); 
+    }
+    loadSessions(); 
+  }); 
+
+  
+
   return (
     <div className="flex min-h-svh flex-col gap-6 bg-zinc-950 bg-[radial-gradient(circle_at_20%_80%,oklch(0.55_0.15_240/0.35),transparent_70%),radial-gradient(circle_at_50%_30%,oklch(0.50_0.25_300/0.4),transparent_80%),radial-gradient(circle_at_80%_20%,oklch(0.40_0.12_260/0.25),transparent_70%)] md:p-10">
       {/* NAVBAR */}
       <div className='flex w-full justify-between flex-row text-white items-center'>
         <h1 className="text-xl font-extrabold tracking-tight">termful.</h1>
 
-        {/* <div className="flex items-center gap-6">
-          <CourseDropdownMenu currTerm={currTerm} setCurrTerm={setCurrTerm}></CourseDropdownMenu>
+        <div className="flex items-center gap-6">
+          <CourseDropdownMenu currTerm={term} setCurrTerm={setTerm}></CourseDropdownMenu>
           <Button asChild>
             <Link href="/profile">User Profile</Link>
           </Button>
-        </div> */}
+        </div>
       </div>
       <hr className="w-full border-white/40" />
 
@@ -195,138 +218,18 @@ export default function Page() {
               <line x1="150" y1="400" x2="30" y2="400" stroke="#EFC2FF" strokeWidth={2} strokeLinecap="round" opacity="0.3"/>
               <line x1="150" y1="430" x2="270" y2="430" stroke="#EFC2FF" strokeWidth={2} strokeLinecap="round" opacity="0.3"/>
 
-              {/* WEEK 1 */}
-              <foreignObject x="20" y="30" width="130" height="70">
-                <div className="border-0 border-white-100 w-[130px] h-[70px] flex flex-row p-0 flex-wrap-reverse items-start justify-end">
-                  {/* {
-                    currTermSessions.map((session: sessionInterface) => (
-                    session.week === week
-                  ))} */}
-                  <div className="w-8 h-8"><TreeIcon hours="2" colour={colour1} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="4" colour={colour2} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="6" colour={colour2} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="4" colour={colour1} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="4" colour={colour1} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="6" colour={colour2} /></div>
-                </div>
-              </foreignObject>
-
-              {/* WEEK 2 */}
-              <foreignObject x="150" y="65" width="150" height="70">
-                <div className="border-0 border-white-100 w-[150px] h-[70px] flex flex-row p-0 flex-wrap-reverse items-start justify-start">
-                  <div className="w-8 h-8"><TreeIcon hours="2" colour={colour1} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="4" colour={colour2} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="6" colour={colour2} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="2" colour={colour3} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="4" colour={colour1} /></div>
-                </div>
-              </foreignObject>
-
-              {/* WEEK 3 */}
-              <foreignObject x="20" y="95" width="130" height="70">
-                <div className="border-0 border-white-100 w-[130px] h-[70px] flex flex-row p-0 flex-wrap-reverse items-start justify-end">
-                  <div className="w-8 h-8"><TreeIcon hours="2" colour={colour1} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="4" colour={colour2} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="6" colour={colour2} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="2" colour={colour3} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="4" colour={colour1} /></div>
-                </div>
-              </foreignObject>
-
-              {/* WEEK 4 */}
-              <foreignObject x="150" y="125" width="150" height="70">
-                <div className="border-0 border-white-100 w-[150px] h-[70px] flex flex-row p-0 flex-wrap-reverse items-start justify-start">
-                  <div className="w-8 h-8"><TreeIcon hours="2" colour={colour1} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="4" colour={colour2} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="6" colour={colour2} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="2" colour={colour3} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="4" colour={colour1} /></div>
-                </div>
-              </foreignObject>
-
-              {/* WEEK 5 */}
-              <foreignObject x="20" y="155" width="130" height="70">
-                <div className="border-0 border-white-100 w-[130px] h-[70px] flex flex-row p-0 flex-wrap-reverse items-start justify-end">
-                  <div className="w-8 h-8"><TreeIcon hours="2" colour={colour1} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="4" colour={colour2} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="6" colour={colour2} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="2" colour={colour3} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="4" colour={colour1} /></div>
-                </div>
-              </foreignObject>
-
-              {/* WEEK 6 */}
-              <foreignObject x="150" y="185" width="150" height="70">
-                <div className="border-0 border-white-100 w-[150px] h-[70px] flex flex-row p-0 flex-wrap-reverse items-start justify-start">
-                  <div className="w-8 h-8"><TreeIcon hours="2" colour={colour1} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="2" colour={colour3} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="4" colour={colour1} /></div>
-                </div>
-              </foreignObject>
-
-              {/* WEEK 7 */}
-              <foreignObject x="20" y="210" width="130" height="70">
-                <div className="border-0 border-white-100 w-[130px] h-[70px] flex flex-row p-0 flex-wrap-reverse items-start justify-end">
-                  <div className="w-8 h-8"><TreeIcon hours="2" colour={colour1} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="6" colour={colour2} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="2" colour={colour3} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="4" colour={colour1} /></div>
-                </div>
-              </foreignObject>
-
-              {/* WEEK 8 */}
-              <foreignObject x="150" y="245" width="150" height="70">
-                <div className="border-0 border-white-100 w-[150px] h-[70px] flex flex-row p-0 flex-wrap-reverse items-start justify-start">
-                  <div className="w-8 h-8"><TreeIcon hours="2" colour={colour1} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="4" colour={colour2} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="4" colour={colour1} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="2" colour={colour3} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="4" colour={colour1} /></div>
-                </div>
-              </foreignObject>
-
-              {/* WEEK 9 */}
-              <foreignObject x="20" y="275" width="130" height="70">
-                <div className="border-0 border-white-100 w-[130px] h-[70px] flex flex-row p-0 flex-wrap-reverse items-end justify-end">
-                  <div className="w-8 h-8"><TreeIcon hours="2" colour={colour1} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="4" colour={colour2} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="6" colour={colour2} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="2" colour={colour3} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="4" colour={colour1} /></div>
-                </div>
-              </foreignObject>
-
-              {/* WEEK 10 */}
-              <foreignObject x="150" y="305" width="150" height="70">
-                <div className="border-0 border-white-100 w-[150px] h-[70px] flex flex-row p-0 flex-wrap-reverse items-start justify-start">
-                  <div className="w-8 h-8"><TreeIcon hours="2" colour={colour1} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="4" colour={colour2} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="4" colour={colour1} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="2" colour={colour3} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="4" colour={colour1} /></div>
-                </div>
-              </foreignObject>
-
-              {/* WEEK 11 */}
-              <foreignObject x="20" y="335" width="130" height="70">
-                <div className="border-0 border-white-100 w-[130px] h-[70px] flex flex-row p-0 flex-wrap-reverse items-end justify-end">
-                  <div className="w-8 h-8"><TreeIcon hours="2" colour={colour1} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="4" colour={colour2} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="6" colour={colour2} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="2" colour={colour3} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="4" colour={colour1} /></div>
-                </div>
-              </foreignObject>
-
-              {/* WEEK 12 */}
-              <foreignObject x="150" y="365" width="150" height="70">
-                <div className="border-0 border-white-100 w-[150px] h-[70px] flex flex-row p-0 flex-wrap-reverse items-start justify-start">
-                  <div className="w-8 h-8"><TreeIcon hours="2" colour={colour1} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="4" colour={colour2} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="2" colour={colour3} /></div>
-                  <div className="w-8 h-8"><TreeIcon hours="4" colour={colour1} /></div>
-                </div>
-              </foreignObject>
+              <WeekBranch x={20} y={30}  width={130} justify="justify-end" courses={courses} week={1} sessions={sessions} />
+              <WeekBranch x={150} y={65}  width={150} justify="justify-start" courses={courses} week={2} sessions={sessions} />
+              <WeekBranch x={20} y={95}  width={130} justify="justify-end" courses={courses} week={3} sessions={sessions} />
+              <WeekBranch x={150} y={125} width={150} justify="justify-start" courses={courses} week={4} sessions={sessions} />
+              <WeekBranch x={20} y={155} width={130} justify="justify-end" courses={courses} week={5} sessions={sessions} />
+              <WeekBranch x={150} y={185} width={150} justify="justify-start" courses={courses} week={6} sessions={sessions} />
+              <WeekBranch x={20} y={210} width={130} justify="justify-end" courses={courses} week={7} sessions={sessions} />
+              <WeekBranch x={150} y={245} width={150} justify="justify-start" courses={courses} week={8} sessions={sessions} />
+              <WeekBranch x={20} y={275} width={130} justify="justify-end" courses={courses} week={9} sessions={sessions} />
+              <WeekBranch x={150} y={305} width={150} justify="justify-start" courses={courses} week={10} sessions={sessions}/>
+              <WeekBranch x={20} y={335} width={130} justify="justify-end" courses={courses} week={11} sessions={sessions}/>
+              <WeekBranch x={150} y={365} width={150} justify="justify-start" courses={courses} week={12} sessions={sessions} />
             </svg>
           </div>
 
