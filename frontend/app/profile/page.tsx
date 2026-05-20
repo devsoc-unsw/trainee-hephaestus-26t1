@@ -7,7 +7,9 @@ import { Input } from "@/components/ui/input";
 
 export default function Page() {
   const [editing, setEditing] = useState(false);
-
+  const defaultYear = "Not Set";
+  const defaultMajor = "Not Set";
+  
   /* Example user details */
   const [profile, setProfile] = useState({
     name: "Khai",
@@ -77,7 +79,7 @@ export default function Page() {
                   }
                 />
               ) : (
-                <div>{profile.year}</div>
+                <div>{profile.year ? profile.year : defaultYear}</div>
               )}
             </div>
             <div className="flex gap-3">
@@ -91,7 +93,7 @@ export default function Page() {
                   }
                 />
               ) : (
-                <div>{profile.major}</div>
+                <div>{profile.major ? profile.major : defaultMajor}</div>
               )}
             </div>
             <div className="flex gap-3">Total Hours: {profile.hours}</div>
