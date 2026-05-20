@@ -10,28 +10,52 @@ import {
 } from "@/components/ui/input-group";
 import TreeIcon from "@/components/ui/tree-icon";
 import { Plus, Trash, X, CornerDownLeft } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 type Course = {
   id: number;
   code: string;
+};
+type CourseWithColor = Course & {
+    color: string;
 };
 
 export default function Page() {
   const blue = "#1d2cff";
   const pink = "#ff9dcb";
   const cyan = "#28cdff";
-
-  const [courses, setCourses] = useState<Course[]>([
-    { id: 1, code: "COMP1511" },
-    { id: 2, code: "COMP1521" },
-  ]);
-
   const courseColors = ["#1d2cff", "#ff9dcb", "#28cdff"];
+
+  const assignColors = (courses: Course[]) => {
+    return courses.map((course, index) => ({
+      ...course,
+      color: courseColors[index % courseColors.length],
+    }));
+  };
+  const [courses, setCourses] = useState<CourseWithColor[]>([]);
+  useEffect(() => {
+    async function loadCourses() {
+      const data = [
+        { id: 1, code: "COMP1511" },
+        { id: 2, code: "COMP1521" },
+      ]
+      const coloredCourses = assignColors(data);
+      setCourses(coloredCourses);
+    }
+    loadCourses();
+  }, []);
 
   const [isAddCourse, setIsAddCourse] = useState(false);
   const [newCourse, setNewCourse] = useState("");
-  const courseLength = Object.values(courses).length;
-
+  const courseLength = courses.length;
+  const getAvailableColor = () => {
+    const usedColors = courses.map(
+      (course) => course.color,
+    );
+  
+    return courseColors.find(
+      (color) => !usedColors.includes(color),
+    );
+  };
   /**
    * Add New Course
    */
@@ -41,9 +65,12 @@ export default function Page() {
     const duplicate = courses.some((course) => course.code === formatted);
     if (duplicate) return;
 
-    const newItem: Course = {
-      id: courses.length + 1,
+    const availableColor = getAvailableColor();
+    if (!availableColor) return;
+    const newItem: CourseWithColor = {
+      id: Date.now(),  // current id
       code: formatted,
+      color: availableColor,
     };
     setCourses([...courses, newItem]);
 
@@ -76,10 +103,10 @@ export default function Page() {
         {/* COURSE LEGEND */}
         <div className="items-left relative flex h-auto w-70 flex-col justify-center rounded-md border-3 border-white p-4 shadow-xl/80 shadow-cyan-500/50">
           {courses.map((course, index) => (
-            <div key={course.id} className="flex items-center gap-2">
+            <div key={index} className="flex items-center gap-2">
               {/* ICON */}
               <div className="flex w-15 justify-center">
-                <CourseIcon colour={courseColors[index]} />
+                <CourseIcon colour={course.color} />
               </div>
 
               {/* COURSE NAME */}
