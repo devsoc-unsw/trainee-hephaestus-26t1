@@ -84,7 +84,7 @@ paths:
   /courses/{term}:
     get:
       tags:
-        - Users
+        - Courses
       summary: Get the courses for a user's term.
       description: Fetch a Termful user's courses for a given term.
       parameters:
@@ -114,6 +114,35 @@ paths:
                 $ref: "#/components/schemas/Error"
         "404":
           description: Term with given name not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    post:
+      security:
+        - cookieAuth: [ ]
+      tags:
+        - Courses
+      summary: Add a new course to the specified term.
+      description: Add a new course to the current Termful user's specified term.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CourseCreate"
+      responses:
+        "201":
+          description: Successfully added course.
+        "401":
+          description: Not Authorised.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Invalid fields provided.
           content:
             application/json:
               schema:
@@ -167,6 +196,14 @@ components:
       example:
         year: 1
         major: Computer Science
+
+    CourseCreate:
+      type: object
+      properties:
+        name:
+          type: string
+      example:
+        name: COMP6080 - Front End Web Development
     
     Error:
       type: object
@@ -183,3 +220,5 @@ components:
 tags:
   - name: Users
     description: Routes relating to Termful users.
+  - name: Courses
+    description: Routes relating to Termful courses.
