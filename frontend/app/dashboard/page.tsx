@@ -16,7 +16,7 @@ type Course = {
   code: string;
 };
 type CourseWithColor = Course & {
-    color: string;
+  color: string;
 };
 
 export default function Page() {
@@ -37,7 +37,7 @@ export default function Page() {
       const data = [
         { id: 1, code: "COMP1511" },
         { id: 2, code: "COMP1521" },
-      ]
+      ];
       const coloredCourses = assignColors(data);
       setCourses(coloredCourses);
     }
@@ -48,13 +48,9 @@ export default function Page() {
   const [newCourse, setNewCourse] = useState("");
   const courseLength = courses.length;
   const getAvailableColor = () => {
-    const usedColors = courses.map(
-      (course) => course.color,
-    );
-  
-    return courseColors.find(
-      (color) => !usedColors.includes(color),
-    );
+    const usedColors = courses.map((course) => course.color);
+
+    return courseColors.find((color) => !usedColors.includes(color));
   };
   /**
    * Add New Course
@@ -68,7 +64,7 @@ export default function Page() {
     const availableColor = getAvailableColor();
     if (!availableColor) return;
     const newItem: CourseWithColor = {
-      id: Date.now(),  // current id
+      id: Date.now(), // current id
       code: formatted,
       color: availableColor,
     };
