@@ -3,30 +3,46 @@
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { redirect, useSearchParams } from "next/navigation";
 import { useAuth } from "@/app/providers/AuthProvider";
 import React, { useState, useEffect } from "react";
+import { getAuthed, postAuthed } from "@/lib/api";
 
 type TimerMode = "focus" | "shortBreak" | "longBreak";
+
+// Dummy data for courses (should be fetched from backend)
 const COURSES = [
-  { id: "c1", name: "COMP1511: Programming Fundamentals" },
-  { id: "c2", name: "COMP6080: Frontend Web Prog" },
+  "COMP1511: Programming Fundamentals",
+  "COMP6080: Frontend Web Prog",
 ];
 
 const TASKS = [
   { id: "t1", name: "Lecture" },
   { id: "t2", name: "Lab" },
   { id: "t3", name: "Assignment" },
+  { id: "t4", name: "Other" },
 ];
+
+// Helper to calculate current UNSW term based on today's date (e.g. "26T2")
+const getCurrentTerm = (): string => {
+  const date = new Date();
+  const year = date.getFullYear().toString().slice(-2);
+  const month = date.getMonth() + 1; // 1-12
+
+  let term = "T1";
+  if (month >= 6 && month <= 8) term = "T2"; // June - Aug
+  if (month >= 9) term = "T3";
+
+  return `${year}${term}`;
+};
 
 export default function Page() {
   // 0. AUTH STATE
   const { session } = useAuth();
 
   // If user is not logged in, redirect to sign-in page
-  if (session === null) {
-    redirect("/signin");
-  }
+  // if (session === null) {
+  //   redirect("/signin");
+  // }
 
   // 1. TIMER + BUTTON STATE
   // Default duration constants (in secs)
@@ -47,6 +63,36 @@ export default function Page() {
   const [isSetupComplete, setIsSetupComplete] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState("");
   const [selectedTask, setSelectedTask] = useState("");
+  // Fetching Course
+  const [courses, setCourses] = useState<string[]>([]);
+  const [isLoadingCourses, setIsLoadingCourses] = useState<boolean>(true);
+
+  // Fetch courses from backend when the page loads
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const currentTerm = getCurrentTerm();
+        const data = await getAuthed<{ courses?: string[] }>(
+          `/courses/${currentTerm}`,
+        );
+        const fetchedCourses =
+          data.courses || (Array.isArray(data) ? data : []);
+
+        if (Array.isArray(fetchedCourses)) {
+          setCourses(fetchedCourses);
+        } else {
+          console.error("Unexpected course data format:", data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch courses:", error);
+      } finally {
+        setIsLoadingCourses(false);
+      }
+    };
+    if (session) {
+      fetchCourses();
+    }
+  }, [session]);
 
   // 2. HELPERS:
   // Handler to move from setup (course + task selection) to timer
@@ -135,19 +181,33 @@ export default function Page() {
     setTimeLeft(newTime);
   };
 
-  const handleSessionComplete = (): void => {
+  // Handle timer hitting zero, log a session to the backend, update local state and go to break
+  const handleSessionComplete = async (): Promise<void> => {
     if (mode === "focus") {
+      // a. Fire completed session to the backend
+      try {
+        await postAuthed("/sessions", {
+          course: selectedCourse,
+          task: selectedTask || "Other", // If no task selected, fallback to 'Other'
+          session_time: new Date().toISOString(),
+          duration: customFocusTime,
+        });
+      } catch (error) {
+        console.error("Failed to log session:", error);
+      }
+
+      // b. Update local state
       const newSessionCount = sessionsCompleted + 1;
       setSessionsCompleted(newSessionCount);
 
-      // Trigger long break every 4th session
+      // c. Trigger long break every 4th session
       if (newSessionCount % 4 === 0) {
         switchMode("longBreak");
       } else {
         switchMode("shortBreak");
       }
     } else
-      // If a break finishes, go back to focus mode
+      // d. If a break finishes, go back to focus mode
       switchMode("focus");
   };
 
@@ -226,7 +286,10 @@ export default function Page() {
                     ? "pointer-events-none opacity-0 select-none"
                     : "opacity-100"
                 }`}
-                onClick={() => setIsSetupComplete(false)}
+                onClick={() => {
+                  setIsSetupComplete(false);
+                  setIsActive(false);
+                }}
                 title="Change course & task"
               >
                 {selectedCourse} ({selectedTask})
@@ -373,14 +436,16 @@ export default function Page() {
                   value={selectedCourse}
                   onChange={(e) => setSelectedCourse(e.target.value)}
                   required
-                  className="w-full rounded-xl border border-white/10 bg-purple-100 p-3 text-zinc-950 transition-all focus:ring-2 focus:ring-purple-500/50 focus:outline-none"
+                  className="w-full rounded-xl border border-white/10 bg-purple-100 p-3 text-zinc-950 transition-all focus:ring-2 focus:ring-purple-500/50 focus:outline-none disabled:opacity-50"
                 >
                   <option value="" disabled>
-                    Select a course
+                    {isLoadingCourses
+                      ? "Loading courses..."
+                      : "Select a course"}
                   </option>
-                  {COURSES.map((course) => (
-                    <option key={course.id} value={course.name}>
-                      {course.name}
+                  {COURSES.map((courseName, index) => (
+                    <option key={index} value={courseName}>
+                      {courseName}
                     </option>
                   ))}
                 </select>
