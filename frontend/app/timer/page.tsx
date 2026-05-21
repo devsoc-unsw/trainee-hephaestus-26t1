@@ -457,7 +457,7 @@ export default function Page() {
                       ? "Loading courses..."
                       : "Select a course"}
                   </option>
-                  {COURSES.map((courseName, index) => (
+                  {courses.map((courseName, index) => (
                     <option key={index} value={courseName}>
                       {courseName}
                     </option>
