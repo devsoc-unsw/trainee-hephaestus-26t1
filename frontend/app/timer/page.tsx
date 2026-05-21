@@ -3,21 +3,38 @@
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { redirect, useSearchParams } from "next/navigation";
+import { redirect } from "next/navigation";
 import { useAuth } from "@/app/providers/AuthProvider";
 import React, { useState, useEffect } from "react";
+import { getCourses, createSession } from "@/lib/api";
 
 type TimerMode = "focus" | "shortBreak" | "longBreak";
+
+// Dummy data for courses (should be fetched from backend)
 const COURSES = [
-  { id: "c1", name: "COMP1511: Programming Fundamentals" },
-  { id: "c2", name: "COMP6080: Frontend Web Prog" },
+  "COMP1511: Programming Fundamentals",
+  "COMP6080: Web Front End Programming",
 ];
 
 const TASKS = [
   { id: "t1", name: "Lecture" },
   { id: "t2", name: "Lab" },
   { id: "t3", name: "Assignment" },
+  { id: "t4", name: "Other" },
 ];
+
+// Helper to calculate current UNSW term based on today's date (e.g. "26T2")
+const getCurrentTerm = (): string => {
+  const date = new Date();
+  const year = date.getFullYear().toString().slice(-2);
+  const month = date.getMonth() + 1; // 1-12
+
+  let term = "T1";
+  if (month >= 6 && month <= 8) term = "T2"; // June - Aug
+  if (month >= 9) term = "T3";
+
+  return `${year}${term}`;
+};
 
 export default function Page() {
   // 0. AUTH STATE
@@ -47,6 +64,29 @@ export default function Page() {
   const [isSetupComplete, setIsSetupComplete] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState("");
   const [selectedTask, setSelectedTask] = useState("");
+  // Fetching Course
+  const [courses, setCourses] = useState<string[]>([]);
+  const [isLoadingCourses, setIsLoadingCourses] = useState<boolean>(true);
+  // Completion Animations
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  // Fetch courses from backend when the page loads
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const currentTerm = getCurrentTerm();
+        const fetchedCourses = await getCourses(currentTerm);
+        setCourses(fetchedCourses);
+      } catch (error) {
+        console.error("Failed to fetch courses:", error);
+      } finally {
+        setIsLoadingCourses(false);
+      }
+    };
+    if (session) {
+      fetchCourses();
+    }
+  }, [session]);
 
   // 2. HELPERS:
   // Handler to move from setup (course + task selection) to timer
@@ -135,19 +175,37 @@ export default function Page() {
     setTimeLeft(newTime);
   };
 
-  const handleSessionComplete = (): void => {
+  // Handle timer hitting zero, log a session to the backend, update local state and go to break
+  const handleSessionComplete = async (): Promise<void> => {
+    // Trigger completion animation of header
+    setIsAnimating(true);
+    setTimeout(() => setIsAnimating(false), 2000);
+
+    // a. Fire completed session to the backend
     if (mode === "focus") {
+      try {
+        await createSession({
+          course: selectedCourse,
+          task: selectedTask || "Other", // If no task selected, fallback to 'Other'
+          session_time: new Date().toISOString(),
+          duration: customFocusTime,
+        });
+      } catch (error) {
+        console.error("Failed to log session:", error);
+      }
+
+      // b. Update local state
       const newSessionCount = sessionsCompleted + 1;
       setSessionsCompleted(newSessionCount);
 
-      // Trigger long break every 4th session
+      // c. Trigger long break every 4th session
       if (newSessionCount % 4 === 0) {
         switchMode("longBreak");
       } else {
         switchMode("shortBreak");
       }
     } else
-      // If a break finishes, go back to focus mode
+      // d. If a break finishes, go back to focus mode
       switchMode("focus");
   };
 
@@ -216,7 +274,9 @@ export default function Page() {
           <section className="flex flex-col items-center justify-center gap-5 text-center">
             {/* a. Header Text & Mode Selector: Dynamically change to focus or break time */}
             <div className="flex flex-col gap-2">
-              <h1 className={`text-3xl tracking-tight sm:text-5xl`}>
+              <h1
+                className={`text-3xl tracking-tight transition-all duration-700 ease-out sm:text-5xl ${isAnimating ? "scale-120 text-emerald-400" : "scale-100"}`}
+              >
                 {mode === "focus" ? "focus time." : "break time."}
               </h1>
 
@@ -226,7 +286,10 @@ export default function Page() {
                     ? "pointer-events-none opacity-0 select-none"
                     : "opacity-100"
                 }`}
-                onClick={() => setIsSetupComplete(false)}
+                onClick={() => {
+                  setIsSetupComplete(false);
+                  setIsActive(false);
+                }}
                 title="Change course & task"
               >
                 {selectedCourse} ({selectedTask})
@@ -318,7 +381,7 @@ export default function Page() {
               </svg>
 
               {/* iii. Interactive Timer Text with Inline Editing  */}
-              <div className="z-10">
+              <div className="relative z-10 flex flex-col items-center justify-center">
                 {isEditing ? (
                   <input
                     type="text"
@@ -338,6 +401,20 @@ export default function Page() {
                     {formatTime(timeLeft)}
                   </div>
                 )}
+                {/* Session progress dots below timer*/}
+                <div className="absolute -bottom-15 flex gap-3">
+                  {[0, 1, 2, 3].map((step) => (
+                    <div
+                      key={step}
+                      className={`h-2.5 w-2.5 rounded-full transition-colors duration-500 ${
+                        step < sessionsCompleted % 4
+                          ? "bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.6)]"
+                          : "bg-white/10"
+                      }`}
+                      title={`Session ${step + 1} of 4`}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -373,14 +450,16 @@ export default function Page() {
                   value={selectedCourse}
                   onChange={(e) => setSelectedCourse(e.target.value)}
                   required
-                  className="w-full rounded-xl border border-white/10 bg-purple-100 p-3 text-zinc-950 transition-all focus:ring-2 focus:ring-purple-500/50 focus:outline-none"
+                  className="w-full rounded-xl border border-white/10 bg-purple-100 p-3 text-zinc-950 transition-all focus:ring-2 focus:ring-purple-500/50 focus:outline-none disabled:opacity-50"
                 >
                   <option value="" disabled>
-                    Select a course
+                    {isLoadingCourses
+                      ? "Loading courses..."
+                      : "Select a course"}
                   </option>
-                  {COURSES.map((course) => (
-                    <option key={course.id} value={course.name}>
-                      {course.name}
+                  {courses.map((courseName, index) => (
+                    <option key={index} value={courseName}>
+                      {courseName}
                     </option>
                   ))}
                 </select>
