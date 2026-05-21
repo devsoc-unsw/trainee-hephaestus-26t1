@@ -26,6 +26,19 @@ export type CourseWithColor = Course & {
   color: string;
 };
 
+// Helper to calculate current UNSW term based on today's date (e.g. "26T2")
+const getCurrentTerm = (): string => {
+  const date = new Date();
+  const year = date.getFullYear().toString().slice(-2);
+  const month = date.getMonth() + 1; // 1-12
+
+  let term = "T1";
+  if (month >= 6 && month <= 8) term = "T2"; // June - Aug
+  if (month >= 9) term = "T3";
+
+  return `${year}${term}`;
+};
+
 export default function Page() {
   const { session } = useAuth();
 
@@ -34,7 +47,7 @@ export default function Page() {
     redirect("/signin");
   }
 
-  const [term, setTerm] = useState("26T1");
+  const [term, setTerm] = useState(getCurrentTerm());
 
   // COURSES
   const courseColors = ["#1d2cff", "#ff9dcb", "#28cdff"];
@@ -345,7 +358,7 @@ export default function Page() {
               y={160}
               justify="justify-end"
               courses={courses}
-              week={1}
+              week={9}
               sessions={sessions}
               fill="bg-indigo-500"
               br="50% 100px 0 80px"
@@ -355,7 +368,7 @@ export default function Page() {
               y={236}
               justify="justify-end"
               courses={courses}
-              week={3}
+              week={7}
               sessions={sessions}
               fill="bg-purple-600"
               br="50% 100px 0 80px"
@@ -375,7 +388,7 @@ export default function Page() {
               y={386}
               justify="justify-end"
               courses={courses}
-              week={7}
+              week={3}
               sessions={sessions}
               fill="bg-indigo-400"
               br="50% 100px 0 80px"
@@ -385,7 +398,7 @@ export default function Page() {
               y={461}
               justify="justify-end"
               courses={courses}
-              week={9}
+              week={1}
               sessions={sessions}
               fill="bg-purple-600"
               br="50% 100px 0 80px"
@@ -396,7 +409,7 @@ export default function Page() {
               y={124}
               justify="justify-end"
               courses={courses}
-              week={2}
+              week={10}
               sessions={sessions}
               fill="bg-purple-500"
               br="100px 50% 80px 0"
@@ -406,7 +419,7 @@ export default function Page() {
               y={199}
               justify="justify-end"
               courses={courses}
-              week={4}
+              week={8}
               sessions={sessions}
               fill="bg-indigo-500"
               br="100px 50% 80px 0"
@@ -426,7 +439,7 @@ export default function Page() {
               y={349}
               justify="justify-end"
               courses={courses}
-              week={8}
+              week={4}
               sessions={sessions}
               fill="bg-indigo-600"
               br="100px 50% 80px 0"
@@ -436,7 +449,7 @@ export default function Page() {
               y={424}
               justify="justify-end"
               courses={courses}
-              week={10}
+              week={2}
               sessions={sessions}
               fill="bg-purple-600"
               br="100px 50% 80px 0"
