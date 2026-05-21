@@ -4,7 +4,7 @@ import generator from "./snowflake.ts";
 
 export const auth = betterAuth({
   database,
-  trustedOrigins: ["http://localhost:3000", "https://termful.railway.app"],
+  trustedOrigins: ["http://localhost:3000", "https://termful.up.railway.app"],
   baseURL: process.env.BETTER_AUTH_URL,
   emailAndPassword: {
     enabled: true,
