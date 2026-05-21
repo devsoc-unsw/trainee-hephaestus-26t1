@@ -83,7 +83,7 @@ export async function updateUser(
  * Get the logged-in user's courses for a specific term.
  */
 export async function getCourses(term: string): Promise<string[]> {
-  return (await getAuthed<{ rooms: string[] }>(`/courses/${term}`)).rooms;
+  return (await getAuthed<{ courses: string[] }>(`/courses/${term}`)).courses;
 }
 
 /**
