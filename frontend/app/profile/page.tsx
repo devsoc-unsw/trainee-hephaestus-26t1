@@ -104,7 +104,7 @@ export default function Page() {
         </div>
       </header>
 
-      <Card className="flex m-auto w-175 border-white/10 bg-black/20 shadow-2xl shadow-purple-950/10 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-purple-500/30 hover:bg-black/30">
+      <Card className="m-auto flex w-175 border-white/10 bg-black/20 shadow-2xl shadow-purple-950/10 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-purple-500/30 hover:bg-black/30">
         {/* Edit button */}
         <button
           onClick={updateDetails}
