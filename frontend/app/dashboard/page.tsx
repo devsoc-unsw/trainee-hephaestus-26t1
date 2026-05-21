@@ -1,5 +1,5 @@
-"use client"
-import { Button } from "@/components/ui/button"
+"use client";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import CourseIcon from "@/components/ui/course-icon";
 import {
@@ -28,15 +28,15 @@ export type CourseWithColor = Course & {
 
 export default function Page() {
   const { session } = useAuth();
-  
+
   // If user is not logged in, redirect to sign-in page
   if (session === null) {
     redirect("/signin");
   }
 
-  const [term, setTerm] = useState("26T1"); 
+  const [term, setTerm] = useState("26T1");
 
-  // COURSES 
+  // COURSES
   const courseColors = ["#1d2cff", "#ff9dcb", "#28cdff"];
   const assignColors = (courses: Course[]) => {
     return courses.map((course, index) => ({
@@ -48,11 +48,11 @@ export default function Page() {
 
   useEffect(() => {
     async function loadCourses() {
-      const data = await getCourses(term); 
+      const data = await getCourses(term);
       const courses = data.map((code, index) => ({
-        id: index + 1, 
-        code
-      }))
+        id: index + 1,
+        code,
+      }));
       const coloredCourses = assignColors(courses);
       setCourses(coloredCourses);
     }
@@ -66,7 +66,7 @@ export default function Page() {
     const usedColors = courses.map((course) => course.color);
     return courseColors.find((color) => !usedColors.includes(color));
   };
-  
+
   /**
    * Add New Course
    */
@@ -87,7 +87,7 @@ export default function Page() {
 
     setNewCourse("");
     setIsAddCourse(false);
-    addCourse(term, formatted); 
+    addCourse(term, formatted);
   };
 
   /**
@@ -95,32 +95,34 @@ export default function Page() {
    */
   const removeCourse = (id: number) => {
     setCourses(courses.filter((course) => course.id !== id));
-    const toDelete = courses.find((course) => course.id === id)?.code; 
+    const toDelete = courses.find((course) => course.id === id)?.code;
     if (toDelete) {
-      deleteCourse(term, toDelete); 
+      deleteCourse(term, toDelete);
     }
   };
 
-  // SESSIONS 
-  const [sessions, setSessions] = useState<Session[]>([]); 
+  // SESSIONS
+  const [sessions, setSessions] = useState<Session[]>([]);
 
   useEffect(() => {
     async function loadSessions() {
-      const data = await getSessions(term); 
-      setSessions(data); 
+      const data = await getSessions(term);
+      setSessions(data);
     }
-    loadSessions(); 
-  }); 
-
+    loadSessions();
+  });
 
   return (
     <div className="flex min-h-svh flex-col gap-6 bg-zinc-950 bg-[radial-gradient(circle_at_20%_80%,oklch(0.55_0.15_240/0.35),transparent_70%),radial-gradient(circle_at_50%_30%,oklch(0.50_0.25_300/0.4),transparent_80%),radial-gradient(circle_at_80%_20%,oklch(0.40_0.12_260/0.25),transparent_70%)] md:p-10">
       {/* NAVBAR */}
-      <div className='flex w-full justify-between flex-row text-white items-center'>
+      <div className="flex w-full flex-row items-center justify-between text-white">
         <h1 className="text-xl font-extrabold tracking-tight">termful.</h1>
 
         <div className="flex items-center gap-6">
-          <CourseDropdownMenu currTerm={term} setCurrTerm={setTerm}></CourseDropdownMenu>
+          <CourseDropdownMenu
+            currTerm={term}
+            setCurrTerm={setTerm}
+          ></CourseDropdownMenu>
           <Button asChild>
             <Link href="/profile">User Profile</Link>
           </Button>
@@ -205,69 +207,263 @@ export default function Page() {
         </div>
 
         {/* TREE */}
-        <div className="border-0 flex flex-col items-center gap-6">
-          <svg className="w-[400px] h-[620px] border-0 border-white-100">
-
+        <div className="flex flex-col items-center gap-6 border-0">
+          <svg className="border-white-100 h-[620px] w-[400px] border-0">
             {/* FLOWER */}
-            <line x1="200" y1="150" x2="200" y2="700" stroke="#EFC2FF" strokeWidth={2} strokeLinecap="round" opacity="1"/>
+            <line
+              x1="200"
+              y1="150"
+              x2="200"
+              y2="700"
+              stroke="#EFC2FF"
+              strokeWidth={2}
+              strokeLinecap="round"
+              opacity="1"
+            />
             <circle cx="200" cy="85" r="80" fill="#8600cf" />
-            <foreignObject 
-              x="150" 
-              y="35" 
-              width="100" 
-              height="100" 
-              className="border-0 border-white-100"
+            <foreignObject
+              x="150"
+              y="35"
+              width="100"
+              height="100"
+              className="border-white-100 border-0"
             >
-              <Button 
-                asChild 
-                variant="secondary" 
-                className="font-extrabold text-md text-white rounded-full w-25 h-25 text-center border-4 border-white bg-radial from-purple-600 to-blue-800 hover:from-purple-400"
+              <Button
+                asChild
+                variant="secondary"
+                className="text-md h-25 w-25 rounded-full border-4 border-white bg-radial from-purple-600 to-blue-800 text-center font-extrabold text-white hover:from-purple-400"
               >
-                <Link href="/timer" >focus</Link>
+                <Link href="/timer">focus</Link>
               </Button>
             </foreignObject>
-            
+
             {/* BRANCHES */}
-            <line x1="200" y1="188" x2="300" y2="188" stroke="#EFC2FF" strokeWidth={2} strokeLinecap="round" opacity="0.5"/>
-            <line x1="200" y1="225" x2="100" y2="225" stroke="#EFC2FF" strokeWidth={2} strokeLinecap="round" opacity="0.5"/>
-            <line x1="200" y1="263" x2="300" y2="263" stroke="#EFC2FF" strokeWidth={2} strokeLinecap="round" opacity="0.5"/>
-            <line x1="200" y1="300" x2="100" y2="300" stroke="#EFC2FF" strokeWidth={2} strokeLinecap="round" opacity="0.5"/>
-            <line x1="200" y1="338" x2="300" y2="338" stroke="#EFC2FF" strokeWidth={2} strokeLinecap="round" opacity="0.5"/>
-            <line x1="200" y1="375" x2="100" y2="375" stroke="#EFC2FF" strokeWidth={2} strokeLinecap="round" opacity="0.5"/>
-            <line x1="200" y1="413" x2="300" y2="413" stroke="#EFC2FF" strokeWidth={2} strokeLinecap="round" opacity="0.5"/>
-            <line x1="200" y1="450" x2="100" y2="450" stroke="#EFC2FF" strokeWidth={2} strokeLinecap="round" opacity="0.5"/>
-            <line x1="200" y1="488" x2="300" y2="488" stroke="#EFC2FF" strokeWidth={2} strokeLinecap="round" opacity="0.5"/>
-            <line x1="200" y1="525" x2="100" y2="525" stroke="#EFC2FF" strokeWidth={2} strokeLinecap="round" opacity="0.5"/>
+            <line
+              x1="200"
+              y1="188"
+              x2="300"
+              y2="188"
+              stroke="#EFC2FF"
+              strokeWidth={2}
+              strokeLinecap="round"
+              opacity="0.5"
+            />
+            <line
+              x1="200"
+              y1="225"
+              x2="100"
+              y2="225"
+              stroke="#EFC2FF"
+              strokeWidth={2}
+              strokeLinecap="round"
+              opacity="0.5"
+            />
+            <line
+              x1="200"
+              y1="263"
+              x2="300"
+              y2="263"
+              stroke="#EFC2FF"
+              strokeWidth={2}
+              strokeLinecap="round"
+              opacity="0.5"
+            />
+            <line
+              x1="200"
+              y1="300"
+              x2="100"
+              y2="300"
+              stroke="#EFC2FF"
+              strokeWidth={2}
+              strokeLinecap="round"
+              opacity="0.5"
+            />
+            <line
+              x1="200"
+              y1="338"
+              x2="300"
+              y2="338"
+              stroke="#EFC2FF"
+              strokeWidth={2}
+              strokeLinecap="round"
+              opacity="0.5"
+            />
+            <line
+              x1="200"
+              y1="375"
+              x2="100"
+              y2="375"
+              stroke="#EFC2FF"
+              strokeWidth={2}
+              strokeLinecap="round"
+              opacity="0.5"
+            />
+            <line
+              x1="200"
+              y1="413"
+              x2="300"
+              y2="413"
+              stroke="#EFC2FF"
+              strokeWidth={2}
+              strokeLinecap="round"
+              opacity="0.5"
+            />
+            <line
+              x1="200"
+              y1="450"
+              x2="100"
+              y2="450"
+              stroke="#EFC2FF"
+              strokeWidth={2}
+              strokeLinecap="round"
+              opacity="0.5"
+            />
+            <line
+              x1="200"
+              y1="488"
+              x2="300"
+              y2="488"
+              stroke="#EFC2FF"
+              strokeWidth={2}
+              strokeLinecap="round"
+              opacity="0.5"
+            />
+            <line
+              x1="200"
+              y1="525"
+              x2="100"
+              y2="525"
+              stroke="#EFC2FF"
+              strokeWidth={2}
+              strokeLinecap="round"
+              opacity="0.5"
+            />
 
             {/* LEAVES */}
-            <TreeLeaf x={20} y={160} justify="justify-end" courses={courses} week={1} sessions={sessions} fill="bg-indigo-500" br="50% 100px 0 80px"></TreeLeaf>
-            <TreeLeaf x={0} y={236} justify="justify-end" courses={courses} week={3} sessions={sessions} fill="bg-purple-600" br="50% 100px 0 80px"></TreeLeaf>
-            <TreeLeaf x={35} y={311} justify="justify-end" courses={courses} week={5} sessions={sessions} fill="bg-purple-500" br="50% 100px 0 80px"></TreeLeaf>
-            <TreeLeaf x={20} y={386} justify="justify-end" courses={courses} week={7} sessions={sessions} fill="bg-indigo-400" br="50% 100px 0 80px"></TreeLeaf>
-            <TreeLeaf x={40} y={461} justify="justify-end" courses={courses} week={9} sessions={sessions} fill="bg-purple-600" br="50% 100px 0 80px"></TreeLeaf>
+            <TreeLeaf
+              x={20}
+              y={160}
+              justify="justify-end"
+              courses={courses}
+              week={1}
+              sessions={sessions}
+              fill="bg-indigo-500"
+              br="50% 100px 0 80px"
+            ></TreeLeaf>
+            <TreeLeaf
+              x={0}
+              y={236}
+              justify="justify-end"
+              courses={courses}
+              week={3}
+              sessions={sessions}
+              fill="bg-purple-600"
+              br="50% 100px 0 80px"
+            ></TreeLeaf>
+            <TreeLeaf
+              x={35}
+              y={311}
+              justify="justify-end"
+              courses={courses}
+              week={5}
+              sessions={sessions}
+              fill="bg-purple-500"
+              br="50% 100px 0 80px"
+            ></TreeLeaf>
+            <TreeLeaf
+              x={20}
+              y={386}
+              justify="justify-end"
+              courses={courses}
+              week={7}
+              sessions={sessions}
+              fill="bg-indigo-400"
+              br="50% 100px 0 80px"
+            ></TreeLeaf>
+            <TreeLeaf
+              x={40}
+              y={461}
+              justify="justify-end"
+              courses={courses}
+              week={9}
+              sessions={sessions}
+              fill="bg-purple-600"
+              br="50% 100px 0 80px"
+            ></TreeLeaf>
 
-            <TreeLeaf x={255} y={124} justify="justify-end" courses={courses} week={2} sessions={sessions} fill="bg-purple-500" br="100px 50% 80px 0"></TreeLeaf>
-            <TreeLeaf x={225} y={199} justify="justify-end" courses={courses} week={4} sessions={sessions} fill="bg-indigo-500" br="100px 50% 80px 0"></TreeLeaf>
-            <TreeLeaf x={240} y={274} justify="justify-end" courses={courses} week={6} sessions={sessions} fill="bg-purple-600" br="100px 50% 80px 0"></TreeLeaf>
-            <TreeLeaf x={220} y={349} justify="justify-end" courses={courses} week={8} sessions={sessions} fill="bg-indigo-600" br="100px 50% 80px 0"></TreeLeaf>
-            <TreeLeaf x={235} y={424} justify="justify-end" courses={courses} week={10} sessions={sessions} fill="bg-purple-600" br="100px 50% 80px 0"></TreeLeaf>
+            <TreeLeaf
+              x={255}
+              y={124}
+              justify="justify-end"
+              courses={courses}
+              week={2}
+              sessions={sessions}
+              fill="bg-purple-500"
+              br="100px 50% 80px 0"
+            ></TreeLeaf>
+            <TreeLeaf
+              x={225}
+              y={199}
+              justify="justify-end"
+              courses={courses}
+              week={4}
+              sessions={sessions}
+              fill="bg-indigo-500"
+              br="100px 50% 80px 0"
+            ></TreeLeaf>
+            <TreeLeaf
+              x={240}
+              y={274}
+              justify="justify-end"
+              courses={courses}
+              week={6}
+              sessions={sessions}
+              fill="bg-purple-600"
+              br="100px 50% 80px 0"
+            ></TreeLeaf>
+            <TreeLeaf
+              x={220}
+              y={349}
+              justify="justify-end"
+              courses={courses}
+              week={8}
+              sessions={sessions}
+              fill="bg-indigo-600"
+              br="100px 50% 80px 0"
+            ></TreeLeaf>
+            <TreeLeaf
+              x={235}
+              y={424}
+              justify="justify-end"
+              courses={courses}
+              week={10}
+              sessions={sessions}
+              fill="bg-purple-600"
+              br="100px 50% 80px 0"
+            ></TreeLeaf>
           </svg>
         </div>
 
         {/* ICON LEGEND */}
-        <div className="flex flex-col rounded-md border-3 border-white items-left p-4 pr-10 text-white shadow-xl/80 shadow-purple-500/50">
+        <div className="items-left flex flex-col rounded-md border-3 border-white p-4 pr-10 text-white shadow-xl/80 shadow-purple-500/50">
           <div className="flex flex-row items-center">
-            <div className="w-15 h-15 border-white-100 border-0"><TreeIcon hours="2" colour="white"/></div>
+            <div className="border-white-100 h-15 w-15 border-0">
+              <TreeIcon hours="2" colour="white" />
+            </div>
             <h3> 0-2 hours</h3>
           </div>
 
           <div className="flex flex-row items-center">
-            <div className="w-15 h-15 border-white-100 border-0"><TreeIcon hours="4" colour="white"/></div>
+            <div className="border-white-100 h-15 w-15 border-0">
+              <TreeIcon hours="4" colour="white" />
+            </div>
             <h3> 2-4 hours </h3>
           </div>
 
           <div className="flex flex-row items-center">
-            <div className="w-15 h-15 border-white-100 border-0"><TreeIcon hours="6" colour="white"/></div>
+            <div className="border-white-100 h-15 w-15 border-0">
+              <TreeIcon hours="6" colour="white" />
+            </div>
             <h3> 4-6 hours </h3>
           </div>
         </div>
