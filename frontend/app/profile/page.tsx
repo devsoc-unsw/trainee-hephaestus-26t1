@@ -10,26 +10,25 @@ import { redirect } from "next/navigation";
 import { getUser, getSessions, updateUser } from "@/lib/api";
 
 type Profile = {
-    name: string,
-    year: string,
-    major: string,
-    hours: string,
-}
+  name: string;
+  year: string;
+  major: string;
+  hours: string;
+};
 
 // Helper to calculate current UNSW term based on today's date (e.g. "26T2")
 const getCurrentTerm = (): string => {
-    const date = new Date();
-    const year = date.getFullYear().toString().slice(-2);
-    const month = date.getMonth() + 1; // 1-12
-    
-    let term = "T1";
-    if (month >= 6 && month <= 8) term = "T2"; // June - Aug
-    if (month >= 9) term = "T3";
-  
-    return `${year}${term}`;
-  };
+  const date = new Date();
+  const year = date.getFullYear().toString().slice(-2);
+  const month = date.getMonth() + 1; // 1-12
 
-  
+  let term = "T1";
+  if (month >= 6 && month <= 8) term = "T2"; // June - Aug
+  if (month >= 9) term = "T3";
+
+  return `${year}${term}`;
+};
+
 export default function Page() {
   const { session } = useAuth();
 
@@ -45,8 +44,8 @@ export default function Page() {
     hours: "",
   });
 
-    // Fetch user detail from backend when the page loads
-    useEffect(() => {
+  // Fetch user detail from backend when the page loads
+  useEffect(() => {
     const fetchProfile = async () => {
       try {
         // User Details
@@ -55,25 +54,25 @@ export default function Page() {
         const sessions = await getSessions(getCurrentTerm());
         // Total Hours
         const totalSeconds = sessions.reduce((total, session) => {
-            return total + session.duration;
-          }, 0);
-          const totalHours = (totalSeconds / 3600).toFixed(1);
+          return total + session.duration;
+        }, 0);
+        const totalHours = (totalSeconds / 3600).toFixed(1);
         const data = {
-            name: userDetail.name,
-            year: userDetail.year !== null &&
-            userDetail.year !== undefined
+          name: userDetail.name,
+          year:
+            userDetail.year !== null && userDetail.year !== undefined
               ? String(userDetail.year)
               : "",
-            major: userDetail.major || "",
-            hours: totalHours,
-          }
-          setProfile(data);
+          major: userDetail.major || "",
+          hours: totalHours,
+        };
+        setProfile(data);
       } catch (error) {
         console.error("Failed to fetch user profile:", error);
       }
     };
     if (session) {
-        fetchProfile();
+      fetchProfile();
     }
   }, [session]);
 
@@ -84,17 +83,17 @@ export default function Page() {
   const updateDetails = async (): Promise<void> => {
     setEditing(!editing);
     await updateUser(userId, {
-        name: profile.name,
-        year: Number(profile.year), 
-        major: profile.major
+      name: profile.name,
+      year: Number(profile.year),
+      major: profile.major,
     });
-  }
+  };
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center bg-zinc-950 bg-[radial-gradient(circle_at_20%_80%,oklch(0.55_0.15_240/0.35),transparent_70%),radial-gradient(circle_at_50%_30%,oklch(0.50_0.25_300/0.4),transparent_80%),radial-gradient(circle_at_80%_20%,oklch(0.40_0.12_260/0.25),transparent_70%)] font-sans text-zinc-100">
       {/* Back Arrow */}
       <div className="absolute top-6 left-6">
-      <Link
+        <Link
           href="/dashboard"
           className="inline-flex items-center gap-2 text-zinc-400 transition hover:text-white"
         >
@@ -102,7 +101,7 @@ export default function Page() {
           Back
         </Link>
       </div>
-      
+
       <Card className="relative w-175 border-white/10 bg-black/20 shadow-2xl shadow-purple-950/10 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-purple-500/30 hover:bg-black/30">
         {/* Edit button */}
         <button
