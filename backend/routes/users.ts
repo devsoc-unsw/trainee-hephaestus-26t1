@@ -34,7 +34,7 @@ router.use(requireAuth);
 /**
  * Modify the user with the given ID.
  */
-router.patch("/:roomId", async (req: userIdReq, res) => {
+router.patch("/:userId", async (req: userIdReq, res) => {
   // Get user from request
   const user = req.authUser;
 
