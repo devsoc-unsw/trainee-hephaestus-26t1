@@ -80,7 +80,7 @@ router.post("/", async (req, res) => {
       term,
       week,
       sessionTimeDate.toISOString(),
-      1500,
+      body.duration,
     );
 
     // Return success

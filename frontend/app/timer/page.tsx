@@ -13,7 +13,7 @@ type TimerMode = "focus" | "shortBreak" | "longBreak";
 // Dummy data for courses (should be fetched from backend)
 const COURSES = [
   "COMP1511: Programming Fundamentals",
-  "COMP6080: Frontend Web Programming",
+  "COMP6080: Web Front End Programming",
 ];
 
 const TASKS = [
@@ -457,7 +457,7 @@ export default function Page() {
                       ? "Loading courses..."
                       : "Select a course"}
                   </option>
-                  {courses.map((courseName, index) => (
+                  {COURSES.map((courseName, index) => (
                     <option key={index} value={courseName}>
                       {courseName}
                     </option>
