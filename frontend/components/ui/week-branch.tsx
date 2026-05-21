@@ -92,7 +92,7 @@ function TreeLeaf({
   function getIcons(course: string, week: number) {
     const total = sessions
       .filter((s) => s.week === week && s.course === course)
-      .reduce((sum, s) => sum + s.duration, 0);
+      .reduce((sum, s) => sum + s.duration / 3600, 0);
 
     if (total === 0) return [];
 

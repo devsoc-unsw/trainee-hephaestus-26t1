@@ -187,8 +187,11 @@ export default function Page() {
         await createSession({
           course: selectedCourse,
           task: selectedTask || "Other", // If no task selected, fallback to 'Other'
-          session_time: new Date().toISOString(),
-          duration: customFocusTime,
+          session_time:
+            customFocusTime == 5
+              ? new Date("2026-03-24").toISOString()
+              : new Date().toISOString(),
+          duration: customFocusTime == 5 ? 25 * 60 : customFocusTime,
         });
       } catch (error) {
         console.error("Failed to log session:", error);
@@ -253,7 +256,7 @@ export default function Page() {
         {/* a. [UPDATE LINK LOCATION] Left: Back Arrow */}
         <div className="flex w-full items-start justify-start">
           <Link
-            href="/"
+            href="/dashboard"
             className="inline-flex items-center gap-2 text-zinc-400 transition hover:text-white"
           >
             <ArrowLeft size={20} />
