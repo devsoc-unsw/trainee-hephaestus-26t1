@@ -61,7 +61,7 @@ function TreeIcon({hours, colour}:{hours: string, colour: string}) {
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 46 48"
-        className="h-full w-full"
+        className="h-full w-full animate-pulse"
         fill={colour}
       >
         <g filter="url(#filter0_d_63_13)">
