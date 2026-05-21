@@ -74,7 +74,7 @@ router.post("/:term", async (req: termReq, res) => {
 /**
  * Delete a course from the specified term.
  */
-router.delete("/:roomId/:course", async (req: termCourseReq, res) => {
+router.delete("/:term/:course", async (req: termCourseReq, res) => {
   // Get user from request
   const user = req.authUser;
 

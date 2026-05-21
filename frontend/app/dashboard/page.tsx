@@ -136,8 +136,10 @@ export default function Page() {
             currTerm={term}
             setCurrTerm={setTerm}
           ></CourseDropdownMenu>
-          <Button asChild>
-            <Link href="/profile">User Profile</Link>
+          <Button variant="outline" className="bg-opacity-20" asChild>
+            <Link href="/profile" className="text-purple-100">
+              User Profile
+            </Link>
           </Button>
         </div>
       </div>

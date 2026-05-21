@@ -90,19 +90,21 @@ export default function Page() {
   };
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center bg-zinc-950 bg-[radial-gradient(circle_at_20%_80%,oklch(0.55_0.15_240/0.35),transparent_70%),radial-gradient(circle_at_50%_30%,oklch(0.50_0.25_300/0.4),transparent_80%),radial-gradient(circle_at_80%_20%,oklch(0.40_0.12_260/0.25),transparent_70%)] font-sans text-zinc-100">
-      {/* Back Arrow */}
-      <div className="absolute top-6 left-6">
-        <Link
-          href="/dashboard"
-          className="inline-flex items-center gap-2 text-zinc-400 transition hover:text-white"
-        >
-          <ArrowLeft size={20} />
-          Back
-        </Link>
-      </div>
+    <div className="flex min-h-screen flex-col bg-zinc-950 bg-[radial-gradient(circle_at_20%_80%,oklch(0.55_0.15_240/0.35),transparent_70%),radial-gradient(circle_at_50%_30%,oklch(0.50_0.25_300/0.4),transparent_80%),radial-gradient(circle_at_80%_20%,oklch(0.40_0.12_260/0.25),transparent_70%)] font-sans text-zinc-100">
+      {/* 1. NAV BAR */}
+      <header className="flex h-13 items-center justify-between border-b border-white/10 bg-black/10 px-6 py-2 backdrop-blur-md">
+        {/* a. [UPDATE LINK LOCATION] Left: Back Arrow */}
+        <div className="flex w-full items-start justify-start">
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center gap-2 text-zinc-400 transition hover:text-white"
+          >
+            <ArrowLeft size={20} />
+          </Link>
+        </div>
+      </header>
 
-      <Card className="relative w-175 border-white/10 bg-black/20 shadow-2xl shadow-purple-950/10 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-purple-500/30 hover:bg-black/30">
+      <Card className="m-auto flex w-175 border-white/10 bg-black/20 shadow-2xl shadow-purple-950/10 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-purple-500/30 hover:bg-black/30">
         {/* Edit button */}
         <button
           onClick={updateDetails}
